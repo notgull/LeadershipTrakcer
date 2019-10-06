@@ -1,0 +1,6 @@
+{
+  "postgres_username": "leadershiptracker",
+  "postgres_password": "123GoodKicks123",
+  "postgres_database": "leadershiptracker",
+  "postgres_host": "127.0.0.1"
+}

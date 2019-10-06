@@ -1,0 +1,19 @@
+{
+  "name": "leadership-tracker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/not-a-seagull/LeadershipTrakcer.git"
+  },
+  "author": "John Nunley",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/not-a-seagull/LeadershipTrakcer/issues"
+  },
+  "homepage": "https://github.com/not-a-seagull/LeadershipTrakcer#readme"
+}
