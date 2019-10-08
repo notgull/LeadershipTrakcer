@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "incremental": true,
     "target": "es5",
     "removeComments": true,
     "resolveJsonModule": true,

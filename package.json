@@ -4,7 +4,8 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "gulp": "node node_modules/gulp/bin/gulp.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,18 @@
   "bugs": {
     "url": "https://github.com/not-a-seagull/LeadershipTrakcer/issues"
   },
-  "homepage": "https://github.com/not-a-seagull/LeadershipTrakcer#readme"
+  "homepage": "https://github.com/not-a-seagull/LeadershipTrakcer#readme",
+  "dependencies": {
+    "@types/body-parser": "^1.17.1",
+    "@types/express": "^4.17.1",
+    "@types/node": "^12.7.11",
+    "@types/pg": "^7.11.2",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "gulp": "^4.0.2",
+    "gulp-typescript": "^5.0.1",
+    "nunjucks": "^3.2.0",
+    "pg": "^7.12.1",
+    "typescript": "^3.6.3"
+  }
 }
