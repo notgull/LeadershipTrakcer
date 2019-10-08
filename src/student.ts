@@ -3,16 +3,16 @@
   Larson Rivera
 */
 
-class Student () {
+class Student  {
 
   //Instance Variables
   first: string;
   last: string;
   belt: string;
-  rp: int;
+  rp: number;
 
 
-  constructor(f: string, l: string, b: string, r: int) {  // first name, last name, belt color, ranking points (rp)
+  constructor(f: string, l: string, b: string, r: number) {  // first name, last name, belt color, ranking points (rp)
     this.first = f;
     this.last = l;
     this.belt = b;
@@ -20,12 +20,12 @@ class Student () {
   }
 
 
-  updateRp(rankingPoint: int) {  // Takes an intager and adds the value to the student's ranking point variable. Can be positive or negative
+  updateRp(rankingPoint: number) {  // Takes an intager and adds the value to the student's ranking point variable. Can be positive or negative
     this.rp += rankingPoint;
   }
 
 
-  updateBelt(offset: int) {  // Takes an intager which signifies the number of belt levels the student is to increase or decrease by.
+  updateBelt(offset: number) {  // Takes an intager which signifies the number of belt levels the student is to increase or decrease by.
     // Followes standard belt progression:
     let belts: string[] = ["White", "Yellow", "Orange", "Green", "Purple", "Blue", "Blue Sr.", "Brown", "Brown Sr.", "Red", "Jr. Black", "Black"];
 
@@ -43,7 +43,7 @@ class Student () {
 
 
   getAtribute(attribute: string) {  // Returns the Attribute based on keywords: "first" (first name) "last" (last name) "belt" (belt color) "rp" (ranking points)
-    let attribute = attribute.toLowerCase();  // turn the parameter to lower toLowerCase
+    attribute = attribute.toLowerCase();  // turn the parameter to lower toLowerCase
 
     // Return the appropriate variable
     if (attribute == "first")
