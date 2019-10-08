@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const certs = { key: fs.readFileSync('certs/lt.key'),
                 cert: fs.readFileSync('certs/lt.pem') };
 
-app.get("/", function(req: express.Request, res: express.Response) {
+app.get("/", function(req: express.Request, res: express.Reponse) {
   res.send(fs.readFileSync('html/template.html'));
 });
 
