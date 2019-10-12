@@ -3,20 +3,23 @@
   Larson Rivera
 */
 
-class Student  {
+import { query } from './sql';
+
+export class Student  {
 
   //Instance Variables
   first: string;
   last: string;
   belt: string;
   rp: number;
-
+  studentId: number;
 
   constructor(f: string, l: string, b: string, r: number) {  // first name, last name, belt color, ranking points (rp)
     this.first = f;
     this.last = l;
     this.belt = b;
     this.rp = r;
+    this.studentId = -1;
   }
 
 
@@ -60,5 +63,33 @@ class Student  {
 
     // otherwise, it's an error
     return "Err";
+  }
+
+  // instantiate a student from a row-like object
+  static fromRow(row: any): Student {
+    return new Student(row.first,
+                       row.last,
+                       row.belt,
+                       row.rp);
+  }
+
+  // load a student by its student id from the sql
+  static async loadById(studentId: number): Promise<Student | null> {
+    let res = await query("SELECT * FROM Students WHERE studentId=$1;", [studentId]);
+    if (res.rowCount === 0) return null;
+    return Student.fromRow(res.rows[0]);
+  }
+
+  // submit a student into the database
+  async submit(): Promise<void> {
+    if (this.studentId === -1) {
+      let res = await query(`INSERT INTO Students (first,last,belt,rp) 
+                             VALUES $1, $2, $3, $3 RETURNING studentId;`,
+                            [this.first, this.last, this.belt, this.rp]);
+      this.studentId = res.rows[0].studentId;
+    } else {
+      let res = await query(`UPDATE Students SET first=$1, last=$2, belt=$3, rp=$4 WHERE studentId=$5;`,
+                            [this.first, this.last, this.belt, this.rp, this.studentId]);
+    } 
   }
 }

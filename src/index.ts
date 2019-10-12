@@ -6,16 +6,26 @@ import * as express from 'express';
 import * as fs from 'fs';
 import * as https from 'https';
 
-const app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+import { initializeSchema } from './schema';
 
-const certs = { key: fs.readFileSync('certs/lt.key'),
-                cert: fs.readFileSync('certs/lt.pem') };
+// run this async
+(async () => {
+  await initializeSchema();
 
-app.get("/", function(req: express.Request, res: express.Response) {
-  res.send(fs.readFileSync('html/template.html'));
-});
+  // initialize express.js
+  const app = express();
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: true }));
 
-const httpsServer = https.createServer(certs, app);
-httpsServer.listen(8444);
+  // ssl certifications
+  const certs = { key: fs.readFileSync('certs/lt.key'),
+                  cert: fs.readFileSync('certs/lt.pem') };
+
+  // main page
+  app.get("/", function(req: express.Request, res: express.Response) {
+    res.send(fs.readFileSync('html/template.html'));
+  });
+
+  const httpsServer = https.createServer(certs, app);
+  httpsServer.listen(8444);
+})();
