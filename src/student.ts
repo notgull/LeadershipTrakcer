@@ -45,7 +45,7 @@ export class Student  {
   }
 
 
-  getAtribute(attribute: string) {  // Returns the Attribute based on keywords: "first" (first name) "last" (last name) "belt" (belt color) "rp" (ranking points)
+  getAttribute(attribute: string) {  // Returns the Attribute based on keywords: "first" (first name) "last" (last name) "belt" (belt color) "rp" (ranking points)
     attribute = attribute.toLowerCase();  // turn the parameter to lower toLowerCase
 
     // Return the appropriate variable
@@ -78,6 +78,18 @@ export class Student  {
     let res = await query("SELECT * FROM Students WHERE studentId=$1;", [studentId]);
     if (res.rowCount === 0) return null;
     return Student.fromRow(res.rows[0]);
+  }
+
+  // load all students
+  static async loadAll(page: number, limit: number): Promise<Array<Student>> {
+    const offset = page * limit;
+    let res = await query("SELECT * FROM Students OFFSET $1 LIMIT $2;", [offset, limit]);
+    if (res.rowCount === 0) return [];
+    else {
+      return res.rows.map((row: any) => { 
+        return Student.fromRow(row);
+      });
+    }
   }
 
   // submit a student into the database

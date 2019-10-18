@@ -7,6 +7,9 @@ import * as fs from 'fs';
 import * as https from 'https';
 
 import { initializeSchema } from './schema';
+import { render } from "./render";
+
+import getLeaderboard from "./pages/leaderboard";
 
 // run this async
 (async () => {
@@ -22,8 +25,9 @@ import { initializeSchema } from './schema';
                   cert: fs.readFileSync('certs/lt.pem') };
 
   // main page
-  app.get("/", function(req: express.Request, res: express.Response) {
-    res.send(fs.readFileSync('html/template.html'));
+  app.get("/", async function(req: express.Request, res: express.Response) {
+    const page = req.query.page || 0;
+	  res.send(render(await getLeaderboard(page)));
   });
 
   const httpsServer = https.createServer(certs, app);
