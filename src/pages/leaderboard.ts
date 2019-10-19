@@ -35,6 +35,8 @@ export default async function getLeaderboardHTML(page: number): Promise<string> 
 
   let promises = [];
   let students = await Student.loadAll(page, limit);
+
+  if (students.length === 0) return "<p>No students yet...</p>";
   
   // generate promises
   for (let i = 0; i < students.length; i++) {

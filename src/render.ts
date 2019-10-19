@@ -9,7 +9,7 @@ let env = new nunjucks.Environment(new nunjucks.FileSystemLoader(templates), {
 });
 
 export function render(content: string): string {
-  return env.render('template.j2', {
+  return env.render('template.html', {
     content: content,
   });
 }
