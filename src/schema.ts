@@ -13,6 +13,7 @@ export async function initializeSchema(): Promise<void> {
   const userTableSql = `CREATE TABLE IF NOT EXISTS Users (
                           userId BIGSERIAL PRIMARY KEY,
                           username TEXT NOT NULL,
+                          email TEXT NOT NULL,
                           pwhash TEXT NOT NULL,
                           salt TEXT NOT NULL,
                           isAdmin BOOLEAN NOT NULL,

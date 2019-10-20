@@ -1,17 +1,38 @@
 <html>
-<head>
-<title>Leadership Points Tracker</title>
-<style>
-body {
-  background-color: #ffc869;
-}
-</style>
-</head>
-<body>
-<center>
-<h1>Leadership Points Tracker</h1>
-</center>
-{{ content }}
-<h3>Created by CGN John Nunley and Larson Rivera 2019</h3>
-</body>
+  <head>
+    <title>Leadership Points Tracker</title>
+    <style type="text/css">
+      body {
+        background-color: #ffc869;
+      }
+
+      #content {
+        margin: 1em;
+        padding: 1em;
+        border: 1px solid black;
+      }
+
+      #errorMessage {
+        color: red;
+      }
+
+      #register {
+        text-align: left;
+        width: 50%;
+        border: 1px solid black;
+        margin: 1em;
+        padding: 1em;
+      }
+    </style>
+    <script type="text/javascript" src="/bundle.js"></script>
+  </head>
+  <body> 
+    <center>
+      <h1>Leadership Points Tracker</h1>
+      <div id="content">
+        {{ content }}
+      </div>
+    </center>
+    <h3>Created by CGN John Nunley and Larson Rivera 2019</h3>
+  </body>
 </html>

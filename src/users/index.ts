@@ -14,21 +14,25 @@ const randomBytes = promisify(randomBytesCB);
 export class User {
   userId: number;
   username: string;
+  email: string;
   pwhash: string;
   salt: Buffer;
   isAdmin: boolean;
   studentId: number | null;
 
-  construtor(
+  constructor(
     userId: number,
     username: string,
+    email: string,
     pwhash: string,
     salt: Buffer,
     isAdmin: boolean,
-    studentId: number | null = null) {
+    studentId: number | null = null
+  ) {
 
     this.userId = userId;
     this.username = username;
+    this.email = email;
     this.pwhash = pwhash;
     this.salt = salt;
     this.isAdmin = isAdmin;
@@ -37,7 +41,7 @@ export class User {
 
   // validate a password
   async validate(password: string): Promise<boolean> {
-    if (hashPassword(password, this.salt) === this.pwhash) {
+    if (await hashPassword(password, this.salt) === this.pwhash) {
       return true;
     } else {
       await timeout(1000); // a one-second on-wrong delay helps make the system secure against rainbow tables
@@ -50,6 +54,7 @@ export class User {
     return new User(
       row.userId,
       row.username,
+      row.email,
       row.pwhash,
       new Buffer(row.salt.data),
       row.isAdmin,
@@ -74,6 +79,7 @@ export class User {
   static async createNewUser(
     username: string, 
     password: string, 
+    email: string,
     student: Student | null,
     isAdmin: boolean): Promise<User> {
 
@@ -82,7 +88,7 @@ export class User {
     }
 
     // generate a random byte sequence
-    const salt = await randomBytes();
+    const salt = await randomBytes(16);
     const pwhash = await hashPassword(password, salt);
     const stringifiedSalt = JSON.stringify(salt).split("'").join("\"");
 
@@ -91,9 +97,9 @@ export class User {
       studentId = student.studentId;
     }
 
-    const addUserSql = `INSERT INTO Users (username, pwhash, salt, isAdmin, studentId)
+    const addUserSql = `INSERT INTO Users (username, pwhash, email, salt, isAdmin, studentId)
                         VALUES $1, $2, $3, $4, $5 RETURNING userId`;
-    const res = await query(addUserSql, [username, pwhash, stringifiedSalt, isAdmin, studentId);
-    return new User(res.rows[0].userId, username, pwHash, salt, isAdmin, studentId);
+    const res = await query(addUserSql, [username, pwhash, email, stringifiedSalt, isAdmin, studentId]);
+    return new User(res.rows[0].userId, username, email, pwhash, salt, isAdmin, studentId);
   }
 }

@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "target": "es5",
+    "removeComments": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "strict": true,
+    "strictNullChecks": false,
+    "baseUrl": ".",
+    "sourceMap": true,
+    "outDir": "dist",
+    "noEmitOnError": true
+  },
+  "include": [
+    "frontend"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

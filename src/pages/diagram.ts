@@ -7,7 +7,7 @@ import { Student } from "./../student";
 
 const limit = 10;
 
-export default async function getLeaderboardHTML(page: number): Promise<string> {
+export default async function getDiagramHTML(page: number): Promise<string> {
   const tableHeader =
     `<table>
        <tr>

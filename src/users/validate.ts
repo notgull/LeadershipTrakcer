@@ -5,6 +5,6 @@ import { promisify } from "util";
 
 const pbkdf2 = promisify(pbkdf2CB);
 
-export async function hashPassword(password: string, salt: Buffer): string {
+export async function hashPassword(password: string, salt: Buffer): Promise<string> {
   return (await pbkdf2(password, salt, 100000, 64, "sha512")).toString("hex");
 }
