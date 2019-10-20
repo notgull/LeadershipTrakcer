@@ -34,8 +34,8 @@ const sessionTable = new SessionTable();
   app.use(bodyParser.urlencoded({ extended: true }));
 
   // ssl certifications
-  const certs = { key: fs.readFileSync('certs/lt.key'),
-                  cert: fs.readFileSync('certs/lt.pem') };
+  const certs = { key: await readFile('certs/lt.key'),
+                  cert: await readFile('certs/lt.pem') };
 
   // get bundled frontend script
   app.get("/bundle.js", async function(req: express.Request, res: express.Response) {
