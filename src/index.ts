@@ -37,6 +37,17 @@ console.log(`LeadershipTrakcer Version ${version}`);
     res.send(bundle);
   });
 
+  // get login page
+  app.get("/login", async function(req: express.Request, res: express.Response) {
+    const loginPage = await readFile("html/login.html");
+    res.send(render(loginPage.toString()));
+  });
+
+  // process a login request
+  app.post("/process-login", async function(req: express.Request, res: express.Response) {
+
+  });
+
   // get registration page
   app.get("/register", async function(req: express.Request, res: express.Response) {
     const registerPage = await readFile("html/register.html");
