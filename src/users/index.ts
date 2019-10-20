@@ -6,7 +6,7 @@ import { promisify } from "util";
 import { hashPassword } from "./validate";
 import { query } from "./../sql";
 import { Student } from "./../student";
-import { timeout } from "./../utils";
+import { Nullable, timeout } from "./../utils";
 
 const randomBytes = promisify(randomBytesCB);
 
@@ -56,20 +56,20 @@ export class User {
       row.username,
       row.email,
       row.pwhash,
-      new Buffer(row.salt.data),
+      new Buffer(JSON.parse(row.salt).data),
       row.isAdmin,
       row.studentId);
   }
 
   // load a user by its ID
-  static async loadById(userId: number): Promise<User | null> {
+  static async loadById(userId: number): Promise<Nullable<User>> {
     const res = await query("SELECT * FROM Users WHERE userId=$1;", [userId]);
     if (res.rowCount === 0) return null; 
     else return User.fromRow(res.rows[0]); 
   }
 
   // load a user by its username
-  static async loadByUsername(username: string): Promise<User | null> {
+  static async loadByUsername(username: string): Promise<Nullable<User>> {
     const res = await query("SELECT * FROM Users WHERE username=$1;", [username]);
     if (res.rowCount === 0) return null;
     else return User.fromRow(res.rows[0]);
@@ -80,12 +80,12 @@ export class User {
     username: string, 
     password: string, 
     email: string,
-    student: Student | null,
+    student: Nullable<Student>,
     isAdmin: boolean): Promise<User> {
 
-    if (!student && !isAdmin) {
+    /*if (!student && !isAdmin) {
       throw new Error("Attempted to create admin account without isAdmin being set");
-    }
+    }*/
 
     // generate a random byte sequence
     const salt = await randomBytes(16);
@@ -97,8 +97,9 @@ export class User {
       studentId = student.studentId;
     }
 
-    const addUserSql = `INSERT INTO Users (username, pwhash, email, salt, isAdmin, studentId)
-                        VALUES $1, $2, $3, $4, $5 RETURNING userId`;
+    const addUserSql = `INSERT INTO Users (username, pwhash, email, salt, isAdmin, studentId) 
+                        VALUES ($1, $2, $3, $4, $5, $6) RETURNING userId;`;
+    console.log(`Adding user ${username} into database`);
     const res = await query(addUserSql, [username, pwhash, email, stringifiedSalt, isAdmin, studentId]);
     return new User(res.rows[0].userId, username, email, pwhash, salt, isAdmin, studentId);
   }

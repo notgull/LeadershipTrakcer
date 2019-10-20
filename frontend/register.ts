@@ -2,6 +2,7 @@
 
 // functions related to the registration of new users
 
+import { emailRegex } from "./utils";
 import { getParameter } from "./parameter";
 import { sendPostData } from "./post";
 
@@ -54,8 +55,6 @@ function isFieldEmpty(field: HTMLInputElement): boolean {
   return !(field.value.trim().length > 0);
 }
 
-const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
 interface RegistrationForm {
   email: HTMLInputElement;
   confirmEmail: HTMLInputElement;
@@ -84,7 +83,7 @@ function processRegistration() {
 
   if (isFieldEmpty(email)) error |= 4;
   else if (email.value !== confirmEmail.value) error |= 16; 
-  else if (emailRegex.test(email.value)) error != 128;
+  else if (!(emailRegex.test(email.value))) error != 128;
 
   if (error !== 0) {
     const errUrl = `/register?errors=${error}`;
