@@ -26,7 +26,12 @@ const sessionTable = new SessionTable();
 
 // run this async
 (async () => {
-  await initializeSchema();
+  // run a handful of async tasks at once
+  const results = await Promise.all([
+    initializeSchema(),
+    readFile("certs/lt.key"),
+    readFile("certs/lt.pem")
+  ]);
 
   // initialize express.js
   const app = express();
@@ -34,8 +39,8 @@ const sessionTable = new SessionTable();
   app.use(bodyParser.urlencoded({ extended: true }));
 
   // ssl certifications
-  const certs = { key: await readFile('certs/lt.key'),
-                  cert: await readFile('certs/lt.pem') };
+  const certs = { key: results[1],
+                  cert: results[2] };
 
   // get bundled frontend script
   app.get("/bundle.js", async function(req: express.Request, res: express.Response) {
