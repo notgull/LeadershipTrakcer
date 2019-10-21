@@ -16,7 +16,6 @@ describe("Automated Testing of LeadershipTracker", function() {
   before(function(done) {
     // clear the database
     removeAll().then(() => {
-
       // re-initialize the server
       getServer().then((serv) => {
         server = serv;
@@ -24,6 +23,11 @@ describe("Automated Testing of LeadershipTracker", function() {
       });
     }).catch((e) => {
       console.log("Table delete failed, tables most likely do not exist yet");
+      // re-initialize the server
+      getServer().then((serv) => {
+        server = serv;
+        done();
+      });
     });
   });
 
