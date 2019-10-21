@@ -213,7 +213,9 @@ describe("Automated Testing of LeadershipTracker", function() {
     const student1Last = "Nunley";
     const student1Belt = "Black";
     const student1Rp = 600;
-    student1 = new Student(student1First, student1Last, student1Belt, student1Rp);
+    it("Should be able to create student without errors", function() {
+      student1 = new Student(student1First, student1Last, student1Belt, student1Rp);
+    });
 
     let student2;
     const student2First = "Gray";
