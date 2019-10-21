@@ -6,6 +6,7 @@ chai.use(require("chai-http"));
 
 let { getServer } = require("../dist/backend/server");
 let { removeAll } = require("../bin/reset_db");
+let { Student } = require("../dist/backend/student");
 let { User } = require("../dist/backend/users");
 
 // automated testing
@@ -201,6 +202,43 @@ describe("Automated Testing of LeadershipTracker", function() {
 
       it("Invalid login should have a delay of at least 1000 milliseconds", function() {
         expect(endDate - beginDate).to.be.above(1000, "Delay was less than 1000 milliseconds");
+      });
+    });
+  });
+
+  // tests to ensure that the student modules are working
+  describe("Testing student modules", function() {
+    let student1;
+    const student1First = "John";
+    const student1Last = "Nunley";
+    const student1Belt = "Black";
+    const student1Rp = 600;
+    student1 = new Student(student1First, student1Last, student1Belt, student1Rp);
+
+    let student2;
+    const student2First = "Gray";
+    const student2Last = "Smith";
+    const student2Belt = "Red";
+    const student2Rp = 10;
+
+    let testStudent;
+
+    describe("Add, then retrieve student from database", function() {
+      it("Add student to database", function(done) {
+        student1.submit().then(() => {
+          done();
+        });
+      });
+
+      it("Retrieval should proceed without errors", function(done) {
+        Student.loadById(student1.studentId).then((student) => {
+          testStudent = student;
+          done();
+        });
+      });
+
+      it("Student should exist", function() {
+        expect(testStudent).to.not.be.null;
       });
     });
   });

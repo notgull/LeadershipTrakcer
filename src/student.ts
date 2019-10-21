@@ -102,9 +102,9 @@ export class Student  {
   async submit(): Promise<void> {
     if (this.studentId === -1) {
       let res = await query(`INSERT INTO Students (first,last,belt,rp) 
-                             VALUES $1, $2, $3, $3 RETURNING studentId;`,
+                             VALUES ($1, $2, $3, $4) RETURNING studentid;`,
                             [this.first, this.last, this.belt, this.rp]);
-      this.studentId = res.rows[0].studentId;
+      this.studentId = res.rows[0].studentid;
     } else {
       let res = await query(`UPDATE Students SET first=$1, last=$2, belt=$3, rp=$4 WHERE studentId=$5;`,
                             [this.first, this.last, this.belt, this.rp, this.studentId]);
