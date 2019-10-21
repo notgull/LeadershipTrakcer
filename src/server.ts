@@ -10,7 +10,7 @@ import * as https from 'https';
 import * as path from "path";
 
 import { checkUsernameUsage, checkEmailUsage } from "./users/check-existence";
-import { emailRegex } from "./utils";
+import { emailRegex, Nullable } from "./utils";
 import { initializeSchema } from './schema';
 import { readFile } from "./promises";
 import { render } from "./render";
@@ -21,6 +21,15 @@ import getDiagram from "./pages/diagram";
 
 const sessionTable = new SessionTable();
 
+function getUsername(req: express.Request): Nullable<string> {
+  const sessionId = req.cookies["sessionId"];
+  if (!sessionId) return null;
+
+  const user = sessionTable.checkSession(sessionId);
+  if (user) return user.username;
+  else return null;
+}
+
 // main function
 export async function getServer(): Promise<express.Application> {
   // initialize schema
@@ -30,6 +39,7 @@ export async function getServer(): Promise<express.Application> {
   const app = express();
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(cookieParser());
 
   // get bundled frontend script
   app.get("/bundle.js", async function(req: express.Request, res: express.Response) {
@@ -41,7 +51,7 @@ export async function getServer(): Promise<express.Application> {
   // get login page
   app.get("/login", async function(req: express.Request, res: express.Response) {
     const loginPage = await readFile("html/login.html");
-    res.send(render(loginPage.toString()));
+    res.send(render(loginPage.toString(), getUsername(req)));
   });
 
   // process a login request
@@ -73,7 +83,7 @@ export async function getServer(): Promise<express.Application> {
   // get registration page
   app.get("/register", async function(req: express.Request, res: express.Response) {
     const registerPage = await readFile("html/register.html");
-    res.send(render(registerPage.toString()));
+    res.send(render(registerPage.toString(), getUsername(req)));
   });
 
   // process a registration request
@@ -122,7 +132,7 @@ export async function getServer(): Promise<express.Application> {
   // main page
   app.get("/", async function(req: express.Request, res: express.Response) {
     const page = req.query.page || 0;
-	  res.send(render(await getDiagram(page)));
+	  res.send(render(await getDiagram(page), getUsername(req)));
   });
  
   return app;
