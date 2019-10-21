@@ -1,6 +1,15 @@
 language: node_js
 node_js:
  - 8.10.0
+services:
+ - postgresql
 
 cache:
  - npm
+
+before_script:
+ - npm run gulp
+ - node bin/setup_db.js | psql -U postgres
+ 
+script:
+ - npm run test
