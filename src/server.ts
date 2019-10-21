@@ -65,7 +65,7 @@ export async function getServer(): Promise<express.Application> {
         return;
       }
 
-      if (!user.validate(password)) {
+      if (!(await user.validate(password))) {
         res.redirect("/login?error=1");
         return;
       }

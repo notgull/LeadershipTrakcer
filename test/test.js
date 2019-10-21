@@ -174,5 +174,34 @@ describe("Automated Testing of LeadershipTracker", function() {
         });
       });
     });
+
+    describe("Login with incorrect password", function() {
+      it("Creating a user to test with", function(done) {
+        User.createNewUser(user1Username, user1Password, user1Email, null, false).then((_u) => {
+          done();
+        });
+      });
+
+      let beginDate;
+      let endDate;
+
+      it("Login should redirect to /login?errors=1", function(done) {
+        const userData = {
+          username: user1Username,
+          password: "wrongPassword123"
+        };
+        beginDate = new Date();
+        chai.request(server).post("/process-login").send(userData).end((err, res) => {
+          expect(err).to.be.null;
+          expect(res).to.redirectTo(/login\?error=1/);
+          endDate = new Date();
+          done();
+        });
+      });
+
+      it("Invalid login should have a delay of at least 1000 milliseconds", function() {
+        expect(endDate - beginDate).to.be.above(1000, "Delay was less than 1000 milliseconds");
+      });
+    });
   });
 });

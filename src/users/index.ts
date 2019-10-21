@@ -41,7 +41,8 @@ export class User {
 
   // validate a password
   async validate(password: string): Promise<boolean> {
-    if (await hashPassword(password, this.salt) === this.pwhash) {
+    const tryhash = await hashPassword(password, this.salt); 
+    if (tryhash === this.pwhash) {
       return true;
     } else {
       await timeout(1000); // a one-second on-wrong delay helps make the system secure against rainbow tables
