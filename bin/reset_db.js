@@ -17,5 +17,7 @@ async function removeAll() {
   await sql.query(query, []);
 }
 
-removeAll().then(()=>{}).catch((e)=>{console.error("Error: " + e);});
+if (require.main === module)
+  removeAll().then(()=>{}).catch((e)=>{console.error("Error: " + e);});
 
+exports.removeAll = removeAll;

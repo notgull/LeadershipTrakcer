@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node node_modules/mocha/bin/mocha",
     "gulp": "node node_modules/gulp/bin/gulp.js",
     "server": "node dist/backend/index.js"
   },
@@ -31,6 +31,7 @@
     "babelify": "^10.0.0",
     "body-parser": "^1.19.0",
     "browserify": "^16.5.0",
+    "chai-http": "^4.3.0",
     "cookie-parser": "^1.4.4",
     "express": "^4.17.1",
     "gulp": "^4.0.2",
@@ -39,5 +40,11 @@
     "pg": "^7.12.1",
     "typescript": "^3.6.3",
     "uuid": "^3.3.3"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2",
+    "nock": "^11.4.0",
+    "sinon": "^7.5.0"
   }
 }
