@@ -22,7 +22,7 @@ describe("Automated Testing of LeadershipTracker", function() {
         done();
       });
     }).catch((e) => {
-      console.log("Table delete failed, tables most likely do not exist yet");
+      //console.log("Table delete failed, tables most likely do not exist yet");
       // re-initialize the server
       getServer().then((serv) => {
         server = serv;
@@ -91,12 +91,31 @@ describe("Automated Testing of LeadershipTracker", function() {
         const userData = {
           username: user2Username,
           password: user2Password,
-          email: user1Email
+          email: user2Email
         };
         chai.request(server).post("/process-register").type("form").send(userData).end((err, res) => {
           expect(err).to.be.null;
           expect(res).to.redirect; 
           done();
+        });
+      });
+
+      describe("New user should be in database", function() {
+        it("User load should proceed without errors", function(done) {
+          User.loadByUsername(user2Username).then((user) => {
+            testUser = user;
+            done();
+          });
+        });
+
+        it("User should exist", function() {
+          assert(testUser, "User does not exist");
+        });
+        it("User's username should match original copy", function() {
+          expect(testUser).to.have.property("username", user2Username, "Username does not match");
+        });
+        it("User's email should match original copy", function() {
+          expect(testUser).to.have.property("email", user2Email, "Email does not match");
         });
       });
     });
@@ -110,6 +129,47 @@ describe("Automated Testing of LeadershipTracker", function() {
         chai.request(server).post("/process-login").send(userData).end((err, res) => {
           expect(err).to.be.null;
           expect(res).to.redirect;
+          done();
+        });
+      });
+    });
+
+    describe("Register with existing username", function() {
+      it("Creating a user to test with", function(done) {
+        User.createNewUser(user1Username, user1Password, user1Email, null, false).then((_u) => {  
+          done();
+        });
+      });
+      it("Registration should redirect to /register?errors=512", function(done) {
+        const userData = {
+          username: user1Username,
+          password: user1Password,
+          email: "irrelevant@test.com"
+        };
+        chai.request(server).post("/process-register").send(userData).end((err, res) => {
+          expect(err).to.be.null;
+          expect(res).to.redirectTo(/register\?errors=512/);
+          done();
+        });
+      });
+    });
+
+    describe("Register with existing email", function() {
+      it("Creating a user to test with", function(done) {
+        User.createNewUser(user1Username, user1Password, user1Email, null, false).then((_u) => {
+          done();
+        });
+      });
+
+      it("Registration should redirect to /register?errors=1024", function(done) {
+         const userData = {
+          username: "irrelevant",
+          password: user1Password,
+          email: user1Email
+        };
+        chai.request(server).post("/process-register").send(userData).end((err, res) => {
+          expect(err).to.be.null;
+          expect(res).to.redirectTo(/register\?errors=1024/);
           done();
         });
       });

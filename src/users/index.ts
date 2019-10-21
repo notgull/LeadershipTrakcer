@@ -99,7 +99,7 @@ export class User {
 
     const addUserSql = `INSERT INTO Users (username, pwhash, email, salt, isAdmin, studentId) 
                         VALUES ($1, $2, $3, $4, $5, $6) RETURNING userId;`;
-    console.log(`Adding user ${username} into database`);
+    //console.log(`Adding user ${username} into database`);
     const res = await query(addUserSql, [username, pwhash, email, stringifiedSalt, isAdmin, studentId]);
     return new User(res.rows[0].userId, username, email, pwhash, salt, isAdmin, studentId);
   }

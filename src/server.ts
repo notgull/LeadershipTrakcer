@@ -102,11 +102,11 @@ export async function getServer(): Promise<express.Application> {
       else if (!(emailRegex.test(email))) error |= 128;
 
       // tell if something is taken
-      if (error !== 0) {
+      if (error === 0) {
         const taken = await Promise.all([
           checkUsernameUsage(username),
           checkEmailUsage(email)
-        ]);
+        ]); 
  
         if (taken[0]) error |= 512;
         if (taken[1]) error |= 1024;
