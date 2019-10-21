@@ -85,7 +85,7 @@ describe("Automated Testing of LeadershipTracker", function() {
       });
     });
  
-    /*// server-based tests
+    // server-based tests
     describe("Create User via HTTP Interface", function() {
       it("User creation should proceed without errors", function(done) {
         const userData = {
@@ -94,8 +94,8 @@ describe("Automated Testing of LeadershipTracker", function() {
           email: user1Email
         };
         chai.request(server).post("/process-register").type("form").send(userData).end((err, res) => {
-          expect(res).to.redirect;
-          expect(res).to.not.have.param("errors");
+          expect(err).to.be.null;
+          expect(res).to.redirect; 
           done();
         });
       });
@@ -108,10 +108,11 @@ describe("Automated Testing of LeadershipTracker", function() {
           password: user2Password 
         };
         chai.request(server).post("/process-login").send(userData).end((err, res) => {
+          expect(err).to.be.null;
           expect(res).to.redirect;
-          expect(res).to.not.have.param("error");
+          done();
         });
       });
-    });*/
+    });
   });
 });
