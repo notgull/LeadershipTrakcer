@@ -22,6 +22,8 @@ describe("Automated Testing of LeadershipTracker", function() {
         server = serv;
         done();
       });
+    }).catch((e) => {
+      console.log("Table delete failed, tables most likely do not exist yet");
     });
   });
 
