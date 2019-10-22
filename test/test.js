@@ -10,7 +10,7 @@ let { Student } = require("../dist/backend/student");
 let { User } = require("../dist/backend/users");
 
 // automated testing
-describe("Automated Testing of LeadershipTracker", function() {
+describe("Automated Testing of LeadershipTrakcer", function() {
   let server;
 
   // clear the database before each run
@@ -222,6 +222,7 @@ describe("Automated Testing of LeadershipTracker", function() {
     const student2Last = "Smith";
     const student2Belt = "Red";
     const student2Rp = 10;
+    student2 = new Student(student2First, student2Last, student2Belt, student2Rp);
 
     let testStudent;
 
@@ -241,6 +242,41 @@ describe("Automated Testing of LeadershipTracker", function() {
 
       it("Student should exist", function() {
         expect(testStudent).to.not.be.null;
+      });
+   
+      it("Student first and last names should match", function() {
+        expect(testStudent).to.have.property("first", student1First, "First names do not match");
+        expect(testStudent).to.have.property("last", student1Last, "Last names do not match");
+      });
+    });
+
+    describe("Load several students from the database", function() {
+      it("Add students to database", function(done) {
+        student1.submit().then(() => {
+          student2.submit().then(() => {
+            done();
+          });
+        });
+      });
+
+      it("Retrieval should proceed without errors", function(done) {
+        Student.loadAll(0, 10).then((students) => {
+          testStudent = students;
+          done();
+        });
+      });
+
+      it("Student list should not be null", function() {
+        expect(testStudent).to.not.be.null;
+      });
+
+      it("Student list should have a length of two", function() {
+        expect(testStudent).to.have.lengthOf(2);
+      });
+
+      it("List should be sorted alphabetically by last name", function() {
+        expect(testStudent[0]).to.have.property("last", "Nunley");
+        expect(testStudent[1]).to.have.property("last", "Smith");
       });
     });
   });
