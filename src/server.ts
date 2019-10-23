@@ -128,6 +128,12 @@ export async function getServer(): Promise<express.Application> {
       return;
     }
   });
+
+  // get create student page
+  app.get("/new-student", async function(req: express.Request, res: express.Response) {
+    const newStudentPage = await readFile("html/createstudent.html");
+    res.send(render(newStudentPage.toString(), getUsername(req)));
+  });
  
   // main page
   app.get("/", async function(req: express.Request, res: express.Response) {

@@ -5,6 +5,7 @@
 
 // BSD LICENSE - c John Nunley and Larson Rivera
 
+import { Belt, parseBelt } from "./belt";
 import { query } from './sql';
 
 export enum SortStudentBy  {
@@ -16,11 +17,11 @@ export class Student  {
   //Instance Variables
   first: string;
   last: string;
-  belt: string;
+  belt: Belt;
   rp: number;
   studentId: number;
 
-  constructor(f: string, l: string, b: string, r: number) {  // first name, last name, belt color, ranking points (rp)
+  constructor(f: string, l: string, b: Belt, r: number) {  // first name, last name, belt color, ranking points (rp)
     this.first = f;
     this.last = l;
     this.belt = b;
@@ -34,7 +35,7 @@ export class Student  {
   }
 
 
-  updateBelt(offset: number) {  // Takes an intager which signifies the number of belt levels the student is to increase or decrease by.
+  /*updateBelt(offset: number) {  // Takes an intager which signifies the number of belt levels the student is to increase or decrease by. TODO: fix this with new system
     // Followes standard belt progression:
     let belts: string[] = ["White", "Yellow", "Orange", "Green", "Purple", "Blue", "Blue Sr.", "Brown", "Brown Sr.", "Red", "Jr. Black", "Black"];
 
@@ -42,7 +43,7 @@ export class Student  {
     let newBelt = belts.indexOf(this.belt);  // get the position of the student's belt
     newBelt += offset;  // apply the offset
     this.belt = belts[newBelt];  // set the new color
-  }
+  }*/
 
 
   updateName(newFirst: string, newLast: string) {  // Changes the student's name
@@ -75,7 +76,7 @@ export class Student  {
   static fromRow(row: any): Student {
     return new Student(row.first,
                        row.last,
-                       row.belt,
+                       <Belt>row.belt,
                        row.rp);
   }
 

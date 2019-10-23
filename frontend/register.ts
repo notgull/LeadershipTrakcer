@@ -2,7 +2,7 @@
 
 // functions related to the registration of new users
 
-import { emailRegex } from "./utils";
+import { emailRegex, isFieldEmpty } from "./utils";
 import { getParameter } from "./parameter";
 import { sendPostData } from "./post";
 
@@ -49,10 +49,6 @@ function processErrors() {
 
     errorList.innerHTML += "</ul><p>Please take care of these problems before submitting again.</p>";
   }
-}
-
-function isFieldEmpty(field: HTMLInputElement): boolean {
-  return !(field.value.trim().length > 0);
 }
 
 interface RegistrationForm {

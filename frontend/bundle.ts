@@ -2,6 +2,7 @@
 
 // essentially the "main" function of the frontend
 
+import { foundCreatestudent } from "./new-student";
 import { foundLogin } from "./login";
 import { foundRegister } from "./register";
 
@@ -18,5 +19,10 @@ window.onload = function() {
   // if the login element is found, add triggers to it
   if (document.getElementById("login")) {
     foundLogin();
+  }
+
+  // if the createstudent element is found, add triggers to it
+  if (document.getElementById("createstudent")) {
+    foundCreatestudent();
   }
 };
