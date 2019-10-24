@@ -120,7 +120,7 @@ export async function getServer(): Promise<express.Application> {
       }
 
       // create a new user
-      const user = await User.createNewUser(username, password, email, null, false);
+      const user = await User.createNewUser(username, password, email, false);
       const id = sessionTable.addSession(user, false);
       res.cookie("sessionId", id, { maxAge: 8640000 * 8 });
       res.redirect("/");
