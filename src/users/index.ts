@@ -18,7 +18,7 @@ export class User {
   pwhash: string;
   salt: Buffer;
   isAdmin: boolean;
-  studentId: number | null;
+  students: Array<number>;
 
   constructor(
     userId: number,
@@ -27,7 +27,7 @@ export class User {
     pwhash: string,
     salt: Buffer,
     isAdmin: boolean,
-    studentId: number | null = null
+    students: Array<number> = []
   ) {
 
     this.userId = userId;
@@ -36,7 +36,7 @@ export class User {
     this.pwhash = pwhash;
     this.salt = salt;
     this.isAdmin = isAdmin;
-    this.studentId = studentId;
+    this.students = students;
   }
 
   // validate a password
@@ -59,7 +59,7 @@ export class User {
       row.pwhash,
       new Buffer(JSON.parse(row.salt).data),
       row.isAdmin,
-      row.studentId);
+      row.students);
   }
 
   // load a user by its ID
@@ -81,7 +81,6 @@ export class User {
     username: string, 
     password: string, 
     email: string,
-    student: Nullable<Student>,
     isAdmin: boolean): Promise<User> {
 
     /*if (!student && !isAdmin) {
@@ -93,15 +92,10 @@ export class User {
     const pwhash = await hashPassword(password, salt);
     const stringifiedSalt = JSON.stringify(salt).split("'").join("\"");
 
-    let studentId: number | null = null;
-    if (student) {
-      studentId = student.studentId;
-    }
-
-    const addUserSql = `INSERT INTO Users (username, pwhash, email, salt, isAdmin, studentId) 
+    const addUserSql = `INSERT INTO Users (username, pwhash, email, salt, isAdmin, students) 
                         VALUES ($1, $2, $3, $4, $5, $6) RETURNING userId;`;
     //console.log(`Adding user ${username} into database`);
-    const res = await query(addUserSql, [username, pwhash, email, stringifiedSalt, isAdmin, studentId]);
-    return new User(res.rows[0].userId, username, email, pwhash, salt, isAdmin, studentId);
+    const res = await query(addUserSql, [username, pwhash, email, stringifiedSalt, isAdmin, []]);
+    return new User(res.rows[0].userId, username, email, pwhash, salt, isAdmin, []);
   }
 }

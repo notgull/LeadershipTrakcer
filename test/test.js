@@ -122,6 +122,8 @@ describe("Automated Testing of LeadershipTrakcer", function() {
     });
 
     describe("Login via HTTP Interface", function() {
+      let cookie; 
+
       it("User login should proceed without errors", function(done) {
         const userData = {
           username: user2Username,
@@ -130,6 +132,7 @@ describe("Automated Testing of LeadershipTrakcer", function() {
         chai.request(server).post("/process-login").send(userData).end((err, res) => {
           expect(err).to.be.null;
           expect(res).to.redirect;
+          //expect(res).to.have.cookie("sessionId");
           done();
         });
       });

@@ -17,7 +17,7 @@ export async function initializeSchema(): Promise<void> {
                           pwhash TEXT NOT NULL,
                           salt TEXT NOT NULL,
                           isAdmin BOOLEAN NOT NULL,
-                          studentId INTEGER REFERENCES Students(studentId));`
+                          students INTEGER[] REFERENCES Students(studentId));`
   
   await query(studentTableSql, []);
   await query(userTableSql, []);

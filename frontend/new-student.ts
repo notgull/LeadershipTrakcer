@@ -2,6 +2,7 @@
 
 // functions for the "new-student" page
 import { Belt, parseBelt } from "./belt";
+import { getCookie } from "./cookie";
 import { getParameter } from "./parameter";
 import { isFieldEmpty } from "./utils";
 import { sendPostData } from "./post";
@@ -12,7 +13,8 @@ import { sendPostData } from "./post";
  4 - First name empty
  8 - Last name empty
  16 - Belt rank empty
- 32 - Internal error
+ 32 - Invalid session
+ 64 - Internal error
 */
 
 function addError(err: string) {
@@ -36,7 +38,8 @@ function processError() {
     if (error & 4) addError("First name field is empty");
     if (error & 8) addError("Last name field is empty");
     if (error & 16) addError("Belt rank field is empty");
-    if (error & 32) addError("An internal error occurred. Please contact the system administrators.");
+    if (error & 32) addError("Invalid session ID. Please try logging out and logging back in.");
+    if (error & 64) addError("An internal error occurred. Please contact the system administrators.");
  
     errList.innerHTML += "</ul><p>Please take care of these problems before submitting again.</p>";
   }
@@ -109,6 +112,10 @@ function addBeltrankTeller() {
 
 // function to run if createstudent element is found
 export function foundCreatestudent() {
+  if (getCookie("sessionId").length === 0) {
+    document.getElementById("createstudent").innerHTML = "You must be logged in in order to create a new student";
+  }
+
   processError();
   const submitButton = document.getElementById("submit");
   if (submitButton) submitButton.onclick = processNewStudent;

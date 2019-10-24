@@ -9,12 +9,14 @@ import * as fs from 'fs';
 import * as https from 'https';
 import * as path from "path";
 
+import { Belt, parseBelt } from "./belt";
 import { checkUsernameUsage, checkEmailUsage } from "./users/check-existence";
 import { emailRegex, Nullable } from "./utils";
 import { initializeSchema } from './schema';
 import { readFile } from "./promises";
 import { render } from "./render";
 import { SessionTable } from "./users/sessions";
+import { Student } from "./student";
 import { User } from "./users";
 
 import getDiagram from "./pages/diagram";
@@ -133,6 +135,54 @@ export async function getServer(): Promise<express.Application> {
   app.get("/new-student", async function(req: express.Request, res: express.Response) {
     const newStudentPage = await readFile("html/createstudent.html");
     res.send(render(newStudentPage.toString(), getUsername(req)));
+  });
+ 
+  // process the creation of a new student
+  app.post("/process-new-student", async function(req: express.Request, res: express.Response) {
+    const { first, last, belt } = req.body;
+
+    try {
+      let error = 0;
+      if (first.trim().length === 0) error |= 4;
+      if (first.trim().length === 0) error |= 8;
+      
+      if (belt.trim().length === 0) error |= 16;
+      else if (!parseBelt(belt)) { 
+        error |= 2;
+      }
+
+      // check the session
+      const username = getUsername(req);
+      if (!username) {
+        error |= 32;
+      }
+
+      // check for first/last combination
+      if (error === 0) {
+        if (await User.checkCombination(first, last)) error |= 1;
+      }
+
+      if (error) {
+        let errUrl = `/new-student?errors=${error}`;
+        if (error & 2) errUrl += `&belt=${belt}`;
+        res.redirect(errUrl);
+        return;
+      } 
+
+      // create a new student 
+      let student = new Student(first, last, parseBelt(belt), 0);
+      let user = await User.loadByUsername(username);
+
+      await student.submit(); 
+      user.students.push(student.studentId);
+      await user.submit();
+ 
+      res.redirect("/");
+    } catch (e) {
+      console.error(e);
+      res.redirect("/new-student?errors=64");
+      return;
+    }
   });
  
   // main page
