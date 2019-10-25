@@ -82,12 +82,12 @@ function processNewStudent() {
 }
 
 let keyTimer: ReturnType<typeof setTimeout>;
-const stopInterval = 3000;
+const stopInterval = 100;
 
 // add an event to make
 function addBeltrankTeller() {
   const beltInput = <HTMLInputElement>document.getElementById("beltrank");
-  const teller = document.getElementById("teller");
+  const teller = document.getElementById("beltrankteller");
 
   if (beltInput && teller) {
     const tellBeltRank = function() {
@@ -100,6 +100,7 @@ function addBeltrankTeller() {
     }
 
     beltInput.onkeyup = function () {
+      //console.log("Key up");
       clearTimeout(keyTimer);
       keyTimer = setTimeout(tellBeltRank, stopInterval);
     };

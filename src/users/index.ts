@@ -80,10 +80,6 @@ export class User {
     email: string,
     isAdmin: boolean): Promise<User> {
 
-    /*if (!student && !isAdmin) {
-      throw new Error("Attempted to create admin account without isAdmin being set");
-    }*/
-
     // generate a random byte sequence
     const salt = await randomBytes(16);
     const pwhash = await hashPassword(password, salt);

@@ -129,7 +129,9 @@ describe("Automated Testing of LeadershipTrakcer", function() {
           username: user2Username,
           password: user2Password 
         };
-        chai.request(server).post("/process-login").send(userData).end((err, res) => {
+
+        const agent = chai.request.agent(server);
+        agent.post("/process-login").send(userData).end((err, res) => {
           expect(err).to.be.null;
           expect(res).to.redirect;
           //console.log(res);
