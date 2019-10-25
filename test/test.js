@@ -87,6 +87,7 @@ describe("Automated Testing of LeadershipTrakcer", function() {
     });
  
     // server-based tests
+    // TODO: restore these when chai-http isn't broken
     describe("Create User via HTTP Interface", function() {
       it("User creation should proceed without errors", function(done) {
         const userData = {
@@ -136,6 +137,7 @@ describe("Automated Testing of LeadershipTrakcer", function() {
           expect(res).to.redirect;
           //console.log(res);
           //expect(res).to.have.cookie("sessionId");
+          agent.close();
           done();
         });
       });
