@@ -46,7 +46,7 @@ describe("Automated Testing of LeadershipTrakcer", function() {
 
     describe("Create User", function() {
       it("User creation should proceed without errors", function(done) {
-        User.createNewUser(user1Username, user1Password, user1Email, null, false).then((user) => {
+        User.createNewUser(user1Username, user1Password, user1Email, false).then((user) => {
           user1 = user;
           done();
         });
@@ -132,6 +132,7 @@ describe("Automated Testing of LeadershipTrakcer", function() {
         chai.request(server).post("/process-login").send(userData).end((err, res) => {
           expect(err).to.be.null;
           expect(res).to.redirect;
+          //console.log(res);
           //expect(res).to.have.cookie("sessionId");
           done();
         });
@@ -140,7 +141,7 @@ describe("Automated Testing of LeadershipTrakcer", function() {
 
     describe("Register with existing username", function() {
       it("Creating a user to test with", function(done) {
-        User.createNewUser(user1Username, user1Password, user1Email, null, false).then((_u) => {  
+        User.createNewUser(user1Username, user1Password, user1Email, false).then((_u) => {  
           done();
         });
       });
@@ -160,7 +161,7 @@ describe("Automated Testing of LeadershipTrakcer", function() {
 
     describe("Register with existing email", function() {
       it("Creating a user to test with", function(done) {
-        User.createNewUser(user1Username, user1Password, user1Email, null, false).then((_u) => {
+        User.createNewUser(user1Username, user1Password, user1Email, false).then((_u) => {
           done();
         });
       });
@@ -181,7 +182,7 @@ describe("Automated Testing of LeadershipTrakcer", function() {
 
     describe("Login with incorrect password", function() {
       it("Creating a user to test with", function(done) {
-        User.createNewUser(user1Username, user1Password, user1Email, null, false).then((_u) => {
+        User.createNewUser(user1Username, user1Password, user1Email, false).then((_u) => {
           done();
         });
       });
@@ -209,6 +210,18 @@ describe("Automated Testing of LeadershipTrakcer", function() {
     });
   });
 
+  let testUser;
+  const tUsername = "user";
+  const tEmail = "test@test.com";
+  const tPassword = "irrelevant1";
+
+  function createTestUser(done) {
+    User.createNewUser(tUsername, tPassword, tEmail, false).then((user) => {
+      testUser = user;
+      done();
+    });
+  }
+
   // tests to ensure that the student modules are working
   describe("Testing student modules", function() {
     let student1;
@@ -230,7 +243,12 @@ describe("Automated Testing of LeadershipTrakcer", function() {
     let testStudent;
 
     describe("Add, then retrieve student from database", function() {
+      it("Students need to have an associated user to be added to the database", function(done) {
+        createTestUser(done);
+      });
+
       it("Add student to database", function(done) {
+        student1.userId = testUser.userId;
         student1.submit().then(() => {
           done();
         });
@@ -254,7 +272,13 @@ describe("Automated Testing of LeadershipTrakcer", function() {
     });
 
     describe("Load several students from the database", function() {
+      it("Students need to have an associated user to be added to the database", function(done) {
+        createTestUser(done);
+      });
+
       it("Add students to database", function(done) {
+        student1.userId = testUser.userId;
+        student2.userId = testUser.userId;
         student1.submit().then(() => {
           student2.submit().then(() => {
             done();

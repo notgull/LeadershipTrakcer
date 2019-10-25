@@ -159,7 +159,7 @@ export async function getServer(): Promise<express.Application> {
 
       // check for first/last combination
       if (error === 0) {
-        if (await User.checkCombination(first, last)) error |= 1;
+        if (await Student.checkCombination(first, last)) error |= 1;
       }
 
       if (error) {
@@ -172,10 +172,9 @@ export async function getServer(): Promise<express.Application> {
       // create a new student 
       let student = new Student(first, last, parseBelt(belt), 0);
       let user = await User.loadByUsername(username);
-
-      await student.submit(); 
-      user.students.push(student.studentId);
-      await user.submit();
+ 
+      student.userId = user.userId;
+      await student.submit();
  
       res.redirect("/");
     } catch (e) {

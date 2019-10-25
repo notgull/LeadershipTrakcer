@@ -18,7 +18,6 @@ export class User {
   pwhash: string;
   salt: Buffer;
   isAdmin: boolean;
-  students: Array<number>;
 
   constructor(
     userId: number,
@@ -27,7 +26,6 @@ export class User {
     pwhash: string,
     salt: Buffer,
     isAdmin: boolean,
-    students: Array<number> = []
   ) {
 
     this.userId = userId;
@@ -36,7 +34,6 @@ export class User {
     this.pwhash = pwhash;
     this.salt = salt;
     this.isAdmin = isAdmin;
-    this.students = students;
   }
 
   // validate a password
@@ -58,8 +55,8 @@ export class User {
       row.email,
       row.pwhash,
       new Buffer(JSON.parse(row.salt).data),
-      row.isAdmin,
-      row.students);
+      row.isAdmin
+    );
   }
 
   // load a user by its ID
@@ -92,24 +89,18 @@ export class User {
     const pwhash = await hashPassword(password, salt);
     const stringifiedSalt = JSON.stringify(salt).split("'").join("\"");
 
-    const addUserSql = `INSERT INTO Users (username, pwhash, email, salt, isAdmin, students) 
-                        VALUES ($1, $2, $3, $4, $5, $6) RETURNING userId;`;
+    const addUserSql = `INSERT INTO Users (username, pwhash, email, salt, isAdmin) 
+                        VALUES ($1, $2, $3, $4, $5) RETURNING userId;`;
     //console.log(`Adding user ${username} into database`);
-    const res = await query(addUserSql, [username, pwhash, email, stringifiedSalt, isAdmin, []]);
-    return new User(res.rows[0].userId, username, email, pwhash, salt, isAdmin, []);
+    const res = await query(addUserSql, [username, pwhash, email, stringifiedSalt, isAdmin]);
+    return new User(res.rows[0].userId, username, email, pwhash, salt, isAdmin);
   }
 
   // submit user details
   async submit(): Promise<void> {
-    const updateSql = `UPDATE Users SET username=$1, pwhash=$2, email=$3, salt=$4, isAdmin=$5, students=$6
+    const updateSql = `UPDATE Users SET username=$1, pwhash=$2, email=$3, salt=$4, isAdmin=$5
                        WHERE userId=$7`;
     await query(updateSql, [this.username, this.pwhash, this.email, this.salt, this.isAdmin,
-                            this.students, this.userId]);
-  }
-
-  // check for user/password combination
-  static async checkCombination(first: string, last: string): Promise<boolean> {
-    const res = await query("SELECT * FROM Students WHERE first=$1 AND last=$2;", [first, last]);
-    return res.rowCount > 0;
+                            this.userId]);
   }
 }

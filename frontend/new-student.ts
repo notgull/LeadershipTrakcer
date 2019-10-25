@@ -52,7 +52,7 @@ interface NewStudentForm {
 };
 
 function processNewStudent() {
-  const data: NewStudentForm = (<any>document.getElementById("studentForm"));
+  const data: NewStudentForm = (<any>document.getElementById("studentform"));
   const { firstname, lastname, beltrank } = data;
 
   let error = 0;
@@ -112,7 +112,7 @@ function addBeltrankTeller() {
 
 // function to run if createstudent element is found
 export function foundCreatestudent() {
-  if (getCookie("sessionId").length === 0) {
+  if (getCookie("sessionId").length === 0 || document.getElementById("loginlink")) {
     document.getElementById("createstudent").innerHTML = "You must be logged in in order to create a new student";
   }
 

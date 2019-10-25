@@ -20,6 +20,7 @@ export class Student  {
   belt: Belt;
   rp: number;
   studentId: number;
+  userId: number;
 
   constructor(f: string, l: string, b: Belt, r: number) {  // first name, last name, belt color, ranking points (rp)
     this.first = f;
@@ -27,24 +28,13 @@ export class Student  {
     this.belt = b;
     this.rp = r;
     this.studentId = -1;
+    this.userId = -1;
   }
 
 
   updateRp(rankingPoint: number) {  // Takes an intager and adds the value to the student's ranking point variable. Can be positive or negative
     this.rp += rankingPoint;
   }
-
-
-  /*updateBelt(offset: number) {  // Takes an intager which signifies the number of belt levels the student is to increase or decrease by. TODO: fix this with new system
-    // Followes standard belt progression:
-    let belts: string[] = ["White", "Yellow", "Orange", "Green", "Purple", "Blue", "Blue Sr.", "Brown", "Brown Sr.", "Red", "Jr. Black", "Black"];
-
-    // Update logic
-    let newBelt = belts.indexOf(this.belt);  // get the position of the student's belt
-    newBelt += offset;  // apply the offset
-    this.belt = belts[newBelt];  // set the new color
-  }*/
-
 
   updateName(newFirst: string, newLast: string) {  // Changes the student's name
     this.first = newFirst;
@@ -74,10 +64,9 @@ export class Student  {
 
   // instantiate a student from a row-like object
   static fromRow(row: any): Student {
-    return new Student(row.first,
-                       row.last,
-                       <Belt>row.belt,
-                       row.rp);
+    const s = new Student(row.first, row.last, <Belt>row.belt, row.rp);
+    s.userId = row.userId;
+    return s;
   }
 
   // load a student by its student id from the sql
@@ -102,13 +91,14 @@ export class Student  {
   // submit a student into the database
   async submit(): Promise<void> {
     if (this.studentId === -1) {
-      let res = await query(`INSERT INTO Students (first,last,belt,rp) 
-                             VALUES ($1, $2, $3, $4) RETURNING studentid;`,
-                            [this.first, this.last, this.belt, this.rp]);
+      let res = await query(`INSERT INTO Students (first,last,belt,rp,userId) 
+                             VALUES ($1, $2, $3, $4, $5) RETURNING studentid;`,
+                            [this.first, this.last, this.belt, this.rp, this.userId]);
       this.studentId = res.rows[0].studentid;
     } else {
       let res = await query(`UPDATE Students SET first=$1, last=$2, belt=$3, rp=$4 WHERE studentId=$5;`,
                             [this.first, this.last, this.belt, this.rp, this.studentId]);
+      // NOTE: we shouldn't need to update the user id
     } 
   }
 

@@ -9,16 +9,16 @@ export async function initializeSchema(): Promise<void> {
                              first TEXT NOT NULL,
                              last TEXT NOT NULL,
                              belt TEXT NOT NULL,
-                             rp INTEGER);`
+                             rp INTEGER,
+                             userId INTEGER REFERENCES Users(userId));`
   const userTableSql = `CREATE TABLE IF NOT EXISTS Users (
                           userId BIGSERIAL PRIMARY KEY,
                           username TEXT NOT NULL,
                           email TEXT NOT NULL,
                           pwhash TEXT NOT NULL,
                           salt TEXT NOT NULL,
-                          isAdmin BOOLEAN NOT NULL,
-                          students INTEGER[] REFERENCES Students(studentId));`
+                          isAdmin BOOLEAN NOT NULL);`
   
-  await query(studentTableSql, []);
   await query(userTableSql, []);
+  await query(studentTableSql, []);
 }
