@@ -10,7 +10,7 @@ os:
 
 jobs:
   allow_failures:
-   - windows
+   - os: windows
 
 cache:
  - npm
