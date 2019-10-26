@@ -20,16 +20,31 @@ import { Student } from "./student";
 import { User } from "./users";
 
 import getDiagram from "./pages/diagram";
+import getStudentManager from "./pages/manage-students";
 
 const sessionTable = new SessionTable();
 
-function getUsername(req: express.Request): Nullable<string> {
+function getUser(req: express.Request): Nullable<User> {
   const sessionId = req.cookies["sessionId"];
   if (!sessionId) return null;
 
-  const user = sessionTable.checkSession(sessionId);
+  return sessionTable.checkSession(sessionId);
+}
+
+function getUsername(req: express.Request): Nullable<string> {
+  const user = getUser(req);
   if (user) return user.username;
   else return null;
+}
+
+function adminLock(req: express.Request, res: express.Response): boolean {
+  const user = getUser(req);
+
+  if (user && user.isAdmin) return true;
+  else {
+    res.send(render("This page requires administrator privileges. If you believe you are an administrator, log in. If you are already logged in, contact a system administrator for assistance.", getUsername(req)));
+    return false;
+  }
 }
 
 // main function
@@ -181,6 +196,14 @@ export async function getServer(): Promise<express.Application> {
       console.error(e);
       res.redirect("/new-student?errors=64");
       return;
+    }
+  });
+
+  // admin console to manage students
+  app.get("/manage-students", async function(req: express.Request, res: express.Response) {
+    if (adminLock(req, res)) {
+      const page = req.query.page || 0;
+      res.send(render(await getStudentManager(page), getUsername(req)));
     }
   });
  

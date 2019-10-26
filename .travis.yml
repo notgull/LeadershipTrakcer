@@ -4,6 +4,14 @@ node_js:
 services:
  - postgresql
 
+os:
+ - linux
+ - windows
+
+jobs:
+  allow_failures:
+   - windows
+
 cache:
  - npm
 
