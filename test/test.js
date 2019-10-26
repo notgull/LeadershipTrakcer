@@ -136,7 +136,7 @@ describe("Automated Testing of LeadershipTrakcer", function() {
           expect(err).to.be.null;
           expect(res).to.redirect;
           //console.log(res);
-          //expect(res).to.have.cookie("sessionId");
+          expect(res).to.have.cookie("sessionId");
           agent.close();
           done();
         });

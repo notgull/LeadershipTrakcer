@@ -1,6 +1,6 @@
 // BSD LICENSE - c John Nunley and Larson Rivera
 
-// contains the express erver to run
+// contains the express server to run
 
 import * as bodyParser from 'body-parser';
 import * as cookieParser from "cookie-parser";
@@ -47,6 +47,13 @@ function adminLock(req: express.Request, res: express.Response): boolean {
   }
 }
 
+function cookieDuplicate(req: express.Request, res: express.Response) {
+  if (req.cookies.sessionIdClone) {
+    res.cookie("sessionId", req.cookies.sessionIdClone, { maxAge: 8640000 });
+    res.clearCookie("sessionIdClone");
+  }
+}
+
 // main function
 export async function getServer(): Promise<express.Application> {
   // initialize schema
@@ -89,7 +96,7 @@ export async function getServer(): Promise<express.Application> {
 
       // add user to session table
       const id = sessionTable.addSession(user, false);
-      res.cookie("sessionId", id, { maxAge: 8640000 * 8 });
+      res.cookie("sessionIdClone", id, { maxAge: 8640000 * 8 });
       res.redirect("/");
     } catch (e) {
       console.error(e);
@@ -137,7 +144,7 @@ export async function getServer(): Promise<express.Application> {
       // create a new user
       const user = await User.createNewUser(username, password, email, false);
       const id = sessionTable.addSession(user, false);
-      res.cookie("sessionId", id, { maxAge: 8640000 * 8 });
+      res.cookie("sessionIdClone", id, { maxAge: 8640000 * 8 });
       res.redirect("/");
     } catch(e) {
       console.error(e);
@@ -209,6 +216,8 @@ export async function getServer(): Promise<express.Application> {
  
   // main page
   app.get("/", async function(req: express.Request, res: express.Response) {
+    cookieDuplicate(req, res);
+
     const page = req.query.page || 0;
 	  res.send(render(await getDiagram(page), getUsername(req)));
   });
