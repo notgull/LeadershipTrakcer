@@ -55,4 +55,14 @@ export class SessionTable {
     }
     return null;
   }
+
+  // remove a session
+  removeSession(sessionId: string) {
+    for (let i = 0; i < this.sessions.length; i++) {
+      if (this.sessions[i].sessionId === sessionId) {
+        this.sessions.splice(i, 1);
+        return;
+      }
+    }
+  }
 };

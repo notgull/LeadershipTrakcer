@@ -7,6 +7,7 @@ import * as cookieParser from "cookie-parser";
 import * as express from 'express';
 import * as fs from 'fs';
 import * as https from 'https';
+import * as nunjucks from "nunjucks";
 import * as path from "path";
 
 import { Belt, parseBelt } from "./belt";
@@ -42,6 +43,7 @@ function adminLock(req: express.Request, res: express.Response): boolean {
 
   if (user && user.isAdmin) return true;
   else {
+    res.status(403);
     res.send(render("This page requires administrator privileges. If you believe you are an administrator, log in. If you are already logged in, contact a system administrator for assistance.", getUsername(req)));
     return false;
   }
@@ -212,6 +214,60 @@ export async function getServer(): Promise<express.Application> {
       const page = req.query.page || 0;
       res.send(render(await getStudentManager(page), getUsername(req)));
     }
+  });
+
+  // change a student's rp
+  app.get("/change-rp", async function(req: express.Request, res: express.Response) {
+    if (adminLock(req, res)) {
+      const studentId = req.query.studentid || -1;
+      const results = await Promise.all([
+        Student.loadById(studentId),
+        readFile("html/change-rp.html")
+      ]);
+
+      if (!student) {
+        res.send(render(
+          'This student does not exist. <a href="/manage-students">Go back to management console</a>', 
+           getUsername(req)
+        ));
+      }
+  
+      const page = nunjucks.renderString(results[1].toString(), {
+        name: `${results[0].first} ${results[0].last}`,
+        rp: results[0].rp
+      });
+      res.send(render(page, getUsername(req)));
+    }
+  }
+
+  app.post("/process-change-rp", async function(req: express.Request, res: express.Response) {
+    if (adminLock(req, res)) { // todo: better admin lock?
+      try {
+        const { studentId, rp } = req.body;
+        const student = await Student.loadById(studentId);
+
+        if (!student) {
+          res.redirect(`/change-rp?student-id=${student.studentId}&error=1`);
+          return;
+        }
+
+        student.rp = rp;
+        await student.submit();
+        res.redirect(`/change-rp?student-id=${studentId}&error=8`);
+      } catch (e) {
+        res.redirect(`/change-rp?student-id=${res.studentId}&error=4`);
+      }
+    }
+  });
+
+  // logout user
+  app.post("/process-logout", function(req: express.Request, res: express.Response) {
+    const sessionId = req.cookies.sessionId;
+    if (sessionId) {
+      sessionTable.removeSession(sessionId);
+      res.clearCookie("sessionId");
+    }
+    res.redirect("/");
   });
  
   // main page

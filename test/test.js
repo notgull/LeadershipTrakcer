@@ -226,6 +226,13 @@ describe("Automated Testing of LeadershipTrakcer", function() {
     });
   }
 
+  function createAdminUser(done) {
+    User.createNewUser(tUsername, tPassword, tEmail, true).then((user) => {
+      testUser = user;
+      done();
+    });
+  }
+
   // tests to ensure that the student modules are working
   describe("Testing student modules", function() {
     let student1;
@@ -308,6 +315,14 @@ describe("Automated Testing of LeadershipTrakcer", function() {
       it("List should be sorted alphabetically by last name", function() {
         expect(testStudent[0]).to.have.property("last", "Nunley");
         expect(testStudent[1]).to.have.property("last", "Smith");
+      });
+    });
+  });
+
+  describe("Testing functionality of administration pages", function() {
+    describe("Student Management Page", function() {
+      it("Get administrator user", function(done) {
+        createAdminUser(done);
       });
     });
   });
