@@ -2,6 +2,7 @@
 
 // essentially the "main" function of the frontend
 
+import { foundChangeRp } from "./change-rp";
 import { foundCreatestudent } from "./new-student";
 import { foundLogin } from "./login";
 import { foundRegister } from "./register";
@@ -24,5 +25,9 @@ window.onload = function() {
   // if the createstudent element is found, add triggers to it
   if (document.getElementById("createstudent")) {
     foundCreatestudent();
+  }
+
+  if (document.getElementById("change-rp")) {
+    foundChangeRp();
   }
 };

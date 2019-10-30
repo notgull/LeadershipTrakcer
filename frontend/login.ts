@@ -1,5 +1,6 @@
 // BSD LICENSE - c John Nunley and Larson Rivera
 
+import { ErrorMap, processErrors } from "./error";
 import { getParameter } from "./parameter";
 import { sendPostData } from "./post";
 
@@ -8,21 +9,10 @@ import { sendPostData } from "./post";
  2 - Internal error
 */
 
-// process the "error" URL parameter
-function processErrors() {
-  const errorParam = getParameter("error");
-  if (errorParam) {
-    const error = parseInt(errorParam, 10);
-    let errorMessage = "";
-    if (error === 1) {
-      errorMessage = "Username and password combination were not found in database";
-    } else {
-      errorMessage = "An internal error occurred. Please contact a site administrator.";
-    }
-
-    document.getElementById("errorMessage").innerHTML = errorMessage;
-  }
-}
+const errMap: ErrorMap = {
+  1: "Username and password combination were not found in database.",
+  2: "An internal error occurred, please consult the site administrators."
+};
 
 interface LoginForm {
   username: HTMLInputElement;
@@ -45,7 +35,7 @@ function processLogin() {
 
 // run on login element found
 export function foundLogin() {
-  processErrors();
+  processErrors(errMap);
   
   const submitButton = document.getElementById("submit");
   if (submitButton)

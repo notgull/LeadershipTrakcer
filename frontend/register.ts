@@ -3,6 +3,7 @@
 // functions related to the registration of new users
 
 import { emailRegex, isFieldEmpty } from "./utils";
+import { ErrorMap, processErrors } from "./error";
 import { getParameter } from "./parameter";
 import { sendPostData } from "./post";
 
@@ -21,34 +22,19 @@ import { sendPostData } from "./post";
   2048: Internal error
 */
 
-function addError(error: string) {
-  const errorList = document.getElementById("errorMessage");
-  if (errorList)
-    errorList.innerHTML += `<li>${error}</li>`;
-}
-
-function processErrors() {
-  const errorParam = getParameter("errors");
-  if (errorParam) {
-    const error = parseInt(errorParam, 10);
-    const errorList = document.getElementById("errorMessage");
-    errorList.innerHTML = "<p>Unfortunately, we were unable to process your registration for the following reasons:</p><ul>";
-
-    if (error & 1) addError("Username field is empty");
-    if (error & 2) addError("Password field is empty");
-    if (error & 4) addError("Email field is empty");
-    if (error & 8) addError("Password does not match the confirm password field");
-    if (error & 16) addError("Email does not match the confirm email field");
-    if (error & 32) addError("Username has illegal characters");
-    if (error & 64) addError("Password has illegal characters");
-    if (error & 128) addError("Email is not a valid email address");
-    if (error & 256) addError("Password is too short");
-    if (error & 512) addError("Username is taken");
-    if (error & 1024) addError("Email is taken");
-    if (error & 2048) addError("An internal error occurred, please consult the system administrators");
-
-    errorList.innerHTML += "</ul><p>Please take care of these problems before submitting again.</p>";
-  }
+const errMap: ErrorMap = {
+  1: "Username field is empty",
+  2: "Password field is empty",
+  4: "Email field is empty",
+  8: "Password does not match the confirm password field",
+  16: "Email does not match the confirm email field",
+  32: "Username has illegal characters",
+  64: "Password has illegal characters",
+  128: "Email is not a valid email address",
+  256: "Password is too short",
+  512: "Username is taken",
+  1024: "Email is taken",
+  2048: "An internal error occurred, please consult the system administrators"
 }
 
 interface RegistrationForm {
@@ -98,7 +84,7 @@ function processRegistration() {
 
 // function to run if the register element is found
 export function foundRegister() {
-  processErrors(); 
+  processErrors(errMap); 
   let submitButton = document.getElementById("submit");
   if (submitButton) {
     submitButton.onclick = processRegistration;

@@ -225,7 +225,7 @@ export async function getServer(): Promise<express.Application> {
         readFile("html/change-rp.html")
       ]);
 
-      if (!student) {
+      if (!results[0]) {
         res.send(render(
           'This student does not exist. <a href="/manage-students">Go back to management console</a>', 
            getUsername(req)
@@ -238,7 +238,7 @@ export async function getServer(): Promise<express.Application> {
       });
       res.send(render(page, getUsername(req)));
     }
-  }
+  });
 
   app.post("/process-change-rp", async function(req: express.Request, res: express.Response) {
     if (adminLock(req, res)) { // todo: better admin lock?
@@ -255,7 +255,7 @@ export async function getServer(): Promise<express.Application> {
         await student.submit();
         res.redirect(`/change-rp?student-id=${studentId}&error=8`);
       } catch (e) {
-        res.redirect(`/change-rp?student-id=${res.studentId}&error=4`);
+        res.redirect(`/change-rp?student-id=${req.body.studentId}&error=4`);
       }
     }
   });
