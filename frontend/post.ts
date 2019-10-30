@@ -1,6 +1,6 @@
 // BSD LICENSE - c John Nunley and Larson Rivera
 
-export type PostParams = { [key: string]: string };
+export type PostParams = { [key: string]: any };
 
 // create a form element to send a post request with
 export function createPostForm(url: string, params: PostParams) {

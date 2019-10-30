@@ -19,7 +19,7 @@ const errMap: ErrorMap = {
 
 // submit rp details
 function processChangeRp() {
-  const rp = document.getElementById("rp");
+  const rp = <HTMLInputElement>document.getElementById("rp");
   
   const url = "/process-change-rp";
   const params = {
@@ -31,13 +31,13 @@ function processChangeRp() {
 }
 
 export function foundChangeRp() {
-  if (getParameter("errors") !== 8) {
+  if (getParameter("errors") !== "8") {
     processErrors(errMap);
   } else {
-    document.getElementById("errorMessage").innerHTML = 'Success! <a href="/manage-students">Return to student management portal</a>.`;
+    document.getElementById("errorMessage").innerHTML = 'Success! <a href="/manage-students">Return to student management portal</a>.';
   }
 
   let submitButton = document.getElementById("submit");
   if (submitButton)
-    submitButton.onclick = processChangeRp();
+    submitButton.onclick = processChangeRp;
 }
