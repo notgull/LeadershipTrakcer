@@ -27,6 +27,7 @@ export default async function getDiagramHTML(page: number): Promise<string> {
   let parts = [tableHeader];
   
   async function generateRow(index: number, student: Student): Promise<void> {
+    console.log(`StudentId is ${student.studentId}`);
     const row = nunjucks.renderString(tableBody, {
       name: `${student.first} ${student.last}`,
       leadershipPoints: await Attendance.getUserPoints(student.studentId)

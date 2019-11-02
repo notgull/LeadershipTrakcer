@@ -65,7 +65,8 @@ export class Student  {
   // instantiate a student from a row-like object
   static fromRow(row: any): Student {
     const s = new Student(row.first, row.last, <Belt>row.belt, row.rp);
-    s.userId = row.userId;
+    s.userId = row.userid;
+    s.studentId = row.studentid;
     return s;
   }
 
