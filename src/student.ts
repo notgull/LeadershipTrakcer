@@ -31,11 +31,6 @@ export class Student  {
     this.userId = -1;
   }
 
-
-  updateRp(rankingPoint: number) {  // Takes an intager and adds the value to the student's ranking point variable. Can be positive or negative
-    this.rp += rankingPoint;
-  }
-
   updateName(newFirst: string, newLast: string) {  // Changes the student's name
     this.first = newFirst;
     this.last = newLast;
@@ -82,7 +77,7 @@ export class Student  {
     let res = await query("SELECT * FROM Students ORDER BY last ASC, first ASC OFFSET $1 LIMIT $2;", [offset, limit]);
     if (res.rowCount === 0) return [];
     else {
-      return res.rows.map((row: any) => { 
+      return res.rows.map((row: any) => {
         return Student.fromRow(row);
       });
     }
@@ -91,7 +86,7 @@ export class Student  {
   // submit a student into the database
   async submit(): Promise<void> {
     if (this.studentId === -1) {
-      let res = await query(`INSERT INTO Students (first,last,belt,rp,userId) 
+      let res = await query(`INSERT INTO Students (first,last,belt,rp,userId)
                              VALUES ($1, $2, $3, $4, $5) RETURNING studentid;`,
                             [this.first, this.last, this.belt, this.rp, this.userId]);
       this.studentId = res.rows[0].studentid;
@@ -99,7 +94,7 @@ export class Student  {
       let res = await query(`UPDATE Students SET first=$1, last=$2, belt=$3, rp=$4 WHERE studentId=$5;`,
                             [this.first, this.last, this.belt, this.rp, this.studentId]);
       // NOTE: we shouldn't need to update the user id
-    } 
+    }
   }
 
   // test to see if a f/l combination exists
