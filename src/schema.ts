@@ -20,9 +20,10 @@ export async function initializeSchema(): Promise<void> {
                           isAdmin BOOLEAN NOT NULL);`;
   const eventTableSql = `CREATE TABLE IF NOT EXISTS Events (
                            eventId BIGSERIAL PRIMARY KEY,
-                           name TEXT NOT NULL,
+                           eventName TEXT NOT NULL,
                            points INTEGER NOT NULL,
-                           date TIMESTAMP NOT NULL);`;
+                           date TIMESTAMP NOT NULL,
+                           description TEXT NOT NULL);`;
   const attendanceTableSql = `CREATE TABLE IF NOT EXISTS Attendance (
                                 studentId INTEGER REFERENCES Students(studentId),
                                 eventId INTEGER REFERENCES Events(eventId),

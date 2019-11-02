@@ -48,11 +48,6 @@ interface RegistrationForm {
 // process when button is clicked
 function processRegistration() {
   const data: RegistrationForm = (<any>document.getElementById("registerForm"));
-  /*const email: HTMLInputElement = data.email;
-  const confirmEmail: HTMLInputElement = data.confirmEmail;
-  const password: HTMLInputElement = data.password;
-  const confirmPassword: HTMLInputElement = data.confirmPassword;
-  const username: HTMLInputElement = data.username;*/
   const { email, confirmEmail, password, confirmPassword, username } = data;
   
   // check for errors
