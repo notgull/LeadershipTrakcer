@@ -11,8 +11,8 @@ class EventRecord {
   eventName: string;
   pts: number;
   date: Date;
-  eventId: number;
   description: string;
+  eventId: number;
 
   constructor(n: string, p: number, d: Date, des: string) { // Constructor to create a named event with the number of points it needs to add
     this.eventName = n;
@@ -29,7 +29,12 @@ class EventRecord {
                         [this.eventName, this.pts, this.date, this.eventId, this.description]);
 
     this.eventId = res.rows[0].eventId; // Get the event id
+  }
 
+  // test to see if a f/l combination exists
+  static async checkCombination(name: string, date: string): Promise<boolean> {
+    let res = await query("SELECT * FROM Students WHERE =$1 and date=$3;", [name, date]);
+    return res.rowCount > 0;
   }
 
 }

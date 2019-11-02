@@ -83,7 +83,7 @@ export async function getServer(): Promise<express.Application> {
   // process a login request
   app.post("/process-login", async function(req: express.Request, res: express.Response) {
     const { username, password } = req.body;
-   
+
     try {
       const user = await User.loadByUsername(username);
       if (!user) {
@@ -132,8 +132,8 @@ export async function getServer(): Promise<express.Application> {
         const taken = await Promise.all([
           checkUsernameUsage(username),
           checkEmailUsage(email)
-        ]); 
- 
+        ]);
+
         if (taken[0]) error |= 512;
         if (taken[1]) error |= 1024;
       }
@@ -160,7 +160,7 @@ export async function getServer(): Promise<express.Application> {
     const newStudentPage = await readFile("html/createstudent.html");
     res.send(render(newStudentPage.toString(), getUsername(req)));
   });
- 
+
   // process the creation of a new student
   app.post("/process-new-student", async function(req: express.Request, res: express.Response) {
     const { first, last, belt } = req.body;
@@ -169,9 +169,9 @@ export async function getServer(): Promise<express.Application> {
       let error = 0;
       if (first.trim().length === 0) error |= 4;
       if (first.trim().length === 0) error |= 8;
-      
+
       if (belt.trim().length === 0) error |= 16;
-      else if (!parseBelt(belt)) { 
+      else if (!parseBelt(belt)) {
         error |= 2;
       }
 
@@ -191,15 +191,15 @@ export async function getServer(): Promise<express.Application> {
         if (error & 2) errUrl += `&belt=${belt}`;
         res.redirect(errUrl);
         return;
-      } 
+      }
 
-      // create a new student 
+      // create a new student
       let student = new Student(first, last, parseBelt(belt), 0);
       let user = await User.loadByUsername(username);
- 
+
       student.userId = user.userId;
       await student.submit();
- 
+
       res.redirect("/");
     } catch (e) {
       console.error(e);
@@ -227,11 +227,11 @@ export async function getServer(): Promise<express.Application> {
 
       if (!results[0]) {
         res.send(render(
-          'This student does not exist. <a href="/manage-students">Go back to management console</a>', 
+          'This student does not exist. <a href="/manage-students">Go back to management console</a>',
            getUsername(req)
         ));
       }
-  
+
       const page = nunjucks.renderString(results[1].toString(), {
         name: `${results[0].first} ${results[0].last}`,
         rp: results[0].rp
@@ -260,6 +260,39 @@ export async function getServer(): Promise<express.Application> {
     }
   });
 
+  //New events
+  app.get("/new-event", async function(req: express.Request, res: express.Response) {
+    const newEventPage = await readFile("html/createEvent.html");
+    res.send(render(newEventPage.toString(), getUsername(req)));
+  });
+
+  app.post("/process-new-event", async function(req: express.Request, res: express.Response) {
+    const {eventName, pts, date, description} = req.body;
+
+    try {
+      let error = 0;
+      if (eventName.trim().length === 0) error |= 4;
+      if ((date.trim()).toString !== "") error |= 8;
+      if (pts.trim().length === 0) error |= 16;
+      if (description.trim().length === 0) error |= 32;
+
+      // check the session
+      const username = getUsername(req);
+      if (!username) {
+        error |= 32;
+      }
+
+      // check for name/date combination
+      if (error === 0) {
+        if (await Student.checkCombination(eventName, date)) error |= 1;
+      }
+
+      if (error) {
+        let errUrl = `/new-event?errors=${error}`;
+        res.redirect(errUrl);
+        return;
+      }
+
   // logout user
   app.post("/process-logout", function(req: express.Request, res: express.Response) {
     const sessionId = req.cookies.sessionId;
@@ -269,7 +302,7 @@ export async function getServer(): Promise<express.Application> {
     }
     res.redirect("/");
   });
- 
+
   // main page
   app.get("/", async function(req: express.Request, res: express.Response) {
     cookieDuplicate(req, res);
@@ -277,6 +310,6 @@ export async function getServer(): Promise<express.Application> {
     const page = req.query.page || 0;
 	  res.send(render(await getDiagram(page), getUsername(req)));
   });
- 
+
   return app;
 }

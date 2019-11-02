@@ -55,21 +55,19 @@ function processNewEvent() {
   if (isFieldEmpty(eventName)) error |= 2;
   if (isFieldEmpty(eventDate)) error |= 4;
   if (isFieldEmpty(eventDate)) error |= 8;
-}
-  /*
+
   if (error !== 0) {
-    let errUrl = `/new-student?errors=${error}`;
-    if (error & 2) {
-      errUrl += `&belt=${beltrank.value}`;
-    }
+    let errUrl = `/new-event?errors=${error}`;
 
     window.location.href = errUrl;
   } else {
-    const url = "/process-new-student";
+    const url = "/process-new-event";
     const params = {
-      first: firstname.value,
-      last: lastname.value,
-      belt: beltrank.value
+      eventName: eventName.value,
+      eventDate: eventDate.value,
+      eventPoints: eventPoints.value,
+      eventDescription: eventDescription.value
+
     };
 
     sendPostData(url, params);
@@ -79,7 +77,8 @@ function processNewEvent() {
 let keyTimer: ReturnType<typeof setTimeout>;
 const stopInterval = 100;
 
-add an event to make
+//add an event to make
+/*
 function addBeltrankTeller() {
   const beltInput = <HTMLInputElement>document.getElementById("beltrank");
   const teller = document.getElementById("beltrankteller");
