@@ -28,9 +28,24 @@ export async function initializeSchema(): Promise<void> {
                                 studentId INTEGER REFERENCES Students(studentId),
                                 eventId INTEGER REFERENCES Events(eventId),
                                 attended BOOLEAN NOT NULL);`;
+  const userPointsFunctionSql = 
+    `CREATE OR REPLACE FUNCTION getUserPoints(sid INTEGER)
+       RETURNS INTEGER AS $$
+       declare
+         total INTEGER;
+       BEGIN
+         SELECT SUM(Events.points) INTO total
+         FROM Attendance
+         INNER JOIN Events ON Attendance.eventId=Events.eventId
+         WHERE Attendance.studentId = sid;
+         RETURN total;
+       END; $$
+       LANGUAGE PLPGSQL;`;
+
   
   await query(userTableSql, []);
   await query(studentTableSql, []);
   await query(eventTableSql, []);
   await query(attendanceTableSql, []);
+  await query(userPointsFunctionSql, []);
 }

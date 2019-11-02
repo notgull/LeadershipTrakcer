@@ -9,7 +9,8 @@ import { Belt, parseBelt } from "./belt";
 import { query } from './sql';
 
 export enum SortStudentBy  {
-  Name = "last, first",
+  Name = "last ASC, first ASC",
+  Points = "getUserPoints(studentId)"
 }
 
 export class Student  {
@@ -73,9 +74,9 @@ export class Student  {
   }
 
   // load all students
-  static async loadAll(page: number, limit: number): Promise<Array<Student>> {
+  static async loadAll(page: number, limit: number, sortBy: SortStudentBy = SortStudentBy.Name): Promise<Array<Student>> {
     const offset = page * limit;
-    let res = await query("SELECT * FROM Students ORDER BY last ASC, first ASC OFFSET $1 LIMIT $2;", [offset, limit]);
+    let res = await query("SELECT * FROM Students ORDER BY $3 OFFSET $1 LIMIT $2;", [offset, limit, sortBy]);
     if (res.rowCount === 0) return [];
     else {
       return res.rows.map((row: any) => {

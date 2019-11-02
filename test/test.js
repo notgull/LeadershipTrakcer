@@ -202,7 +202,7 @@ describe("Automated Testing of LeadershipTrakcer", function() {
         beginDate = new Date();
         chai.request(server).post("/process-login").send(userData).end((err, res) => {
           expect(err).to.be.null;
-          expect(res).to.redirectTo(/login\?error=1/);
+          expect(res).to.redirectTo(/login\?errors=1/);
           endDate = new Date();
           done();
         });

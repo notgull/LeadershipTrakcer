@@ -303,6 +303,11 @@ export async function getServer(): Promise<express.Application> {
     res.redirect("/");
   });
 
+  app.get("/create-event", async function(req: express.Request, res: express.Response) {
+    const page = await readFile("html/createEvent.html");
+    res.send(render(page.toString(), getUsername(req)));
+  });
+ 
   // main page
   app.get("/", async function(req: express.Request, res: express.Response) {
     cookieDuplicate(req, res);
