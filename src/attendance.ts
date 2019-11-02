@@ -6,12 +6,7 @@ import { query } from "./sql";
 export class Attendance {
   // get all of the user points
   static async getUserPoints(studentId: number): Promise<number> {
-    let res = await query(
-      `SELECT SUM(Events.points) AS totalpoints
-       FROM Attendance
-       INNER JOIN Events ON Attendance.eventId=Events.eventId
-       WHERE Attendance.studentId = $1;`,
-       [studentId]);
+    let res = await query("SELECT getUserPoints($1) as totalpoints;", [studentId]);
 
     if (res.rowCount === 0) return 0;
      
