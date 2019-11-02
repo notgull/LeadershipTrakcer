@@ -3,17 +3,14 @@
   Larson Rivera
 */
 
-class EventRecord {
+// BSD LISENCE - c John Nunley and Larson Rivera
 
-  constructor(n: String, p: number) { // Constructor to create a named event with the number of points it needs to add
+class EventRecord {
+  name: string;
+  pts: number;
+
+  constructor(n: string, p: number) { // Constructor to create a named event with the number of points it needs to add
     this.name = n;
     this.pts = p;
   }
-
-  addPointsRecursive(ls: list){
-
-  }
-
-
-
 }

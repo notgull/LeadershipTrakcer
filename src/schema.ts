@@ -10,15 +10,25 @@ export async function initializeSchema(): Promise<void> {
                              last TEXT NOT NULL,
                              belt TEXT NOT NULL,
                              rp INTEGER,
-                             userId INTEGER REFERENCES Users(userId));`
+                             userId INTEGER REFERENCES Users(userId));`;
   const userTableSql = `CREATE TABLE IF NOT EXISTS Users (
                           userId BIGSERIAL PRIMARY KEY,
                           username TEXT NOT NULL,
                           email TEXT NOT NULL,
                           pwhash TEXT NOT NULL,
                           salt TEXT NOT NULL,
-                          isAdmin BOOLEAN NOT NULL);`
+                          isAdmin BOOLEAN NOT NULL);`;
+  const eventTableSql = `CREATE TABLE IF NOT EXISTS Event (
+                           eventId BIGSERIAL PRIMARY KEY,
+                           name: TEXT NOT NULL,
+                           points: INTEGER NOT NULL);`;
+  const attendanceTableSql = `CREATE TABLE IF NOT EXISTS Attendance (
+                                studentId: INTEGER REFERENCES Students(studentId).
+                                eventId: INTEGER REFERENCES Events(eventId),
+                                attended BOOLEAN NOT NULL);`;
   
   await query(userTableSql, []);
   await query(studentTableSql, []);
+  await query(eventTableSql, []);
+  await query(attendanceTableSql, []);
 }

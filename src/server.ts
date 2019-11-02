@@ -18,7 +18,7 @@ import { readFile } from "./promises";
 import { render } from "./render";
 import { SessionTable } from "./users/sessions";
 import { Student } from "./student";
-import { User } from "./users";
+import { User } from "./users/index";
 
 import getDiagram from "./pages/diagram";
 import getStudentManager from "./pages/manage-students";

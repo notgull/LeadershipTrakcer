@@ -10,7 +10,8 @@
     "baseUrl": ".",
     "sourceMap": true,
     "outDir": "dist",
-    "noEmitOnError": true
+    "noEmitOnError": true,
+    "lib": ["es2015", "dom"]
   },
   "include": [
     "src"
