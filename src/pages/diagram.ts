@@ -3,9 +3,10 @@
 // leaderboard generator
 import * as nunjucks from "nunjucks";
 
+import { Attendance } from "./../attendance";
 import { Student } from "./../student";
 
-const limit = 10;
+const limit = 30;
 
 export default async function getDiagramHTML(page: number): Promise<string> {
   const tableHeader =
@@ -26,9 +27,10 @@ export default async function getDiagramHTML(page: number): Promise<string> {
   let parts = [tableHeader];
   
   async function generateRow(index: number, student: Student): Promise<void> {
+    console.log(`StudentId is ${student.studentId}`);
     const row = nunjucks.renderString(tableBody, {
       name: `${student.first} ${student.last}`,
-      leadershipPoints: student.rp
+      leadershipPoints: await Attendance.getUserPoints(student.studentId)
     });
     parts[index] = row;
   }

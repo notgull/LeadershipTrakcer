@@ -87,12 +87,12 @@ export async function getServer(): Promise<express.Application> {
     try {
       const user = await User.loadByUsername(username);
       if (!user) {
-        res.redirect("/login?error=1");
+        res.redirect("/login?errors=1");
         return;
       }
 
       if (!(await user.validate(password))) {
-        res.redirect("/login?error=1");
+        res.redirect("/login?errors=1");
         return;
       }
 
@@ -102,7 +102,7 @@ export async function getServer(): Promise<express.Application> {
       res.redirect("/");
     } catch (e) {
       console.error(e);
-      res.redirect("/login?error=2");
+      res.redirect("/login?errors=2");
     }
   });
 
@@ -247,15 +247,15 @@ export async function getServer(): Promise<express.Application> {
         const student = await Student.loadById(studentId);
 
         if (!student) {
-          res.redirect(`/change-rp?student-id=${student.studentId}&error=1`);
+          res.redirect(`/change-rp?student-id=${student.studentId}&errors=1`);
           return;
         }
 
         student.rp = rp;
         await student.submit();
-        res.redirect(`/change-rp?student-id=${studentId}&error=8`);
+        res.redirect(`/change-rp?student-id=${studentId}&errors=8`);
       } catch (e) {
-        res.redirect(`/change-rp?student-id=${req.body.studentId}&error=4`);
+        res.redirect(`/change-rp?student-id=${req.body.studentId}&errors=4`);
       }
     }
   });
