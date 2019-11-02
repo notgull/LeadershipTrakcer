@@ -28,6 +28,10 @@ export async function initializeSchema(): Promise<void> {
                                 studentId INTEGER REFERENCES Students(studentId),
                                 eventId INTEGER REFERENCES Events(eventId),
                                 attended BOOLEAN NOT NULL);`;
+  /*const userPointsFunctionSql = 
+    `CREATE OR REPLACE FUNCTION getUserPoints(a INTEGER)
+       RETURNS INTEGER AS*/
+
   
   await query(userTableSql, []);
   await query(studentTableSql, []);
