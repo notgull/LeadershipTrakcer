@@ -118,6 +118,6 @@ export function foundCreatestudent() {
 }
 */
 
-export default function foundCreateevent() {
+export function foundCreateevent() {
 
 }
