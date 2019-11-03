@@ -117,3 +117,7 @@ export function foundCreatestudent() {
   addBeltrankTeller();
 }
 */
+
+export default function foundCreateevent() {
+
+}

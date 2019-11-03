@@ -292,6 +292,10 @@ export async function getServer(): Promise<express.Application> {
         res.redirect(errUrl);
         return;
       }
+    } catch (e) {
+      res.redirect("/event?errors=64");
+    }
+  });
 
   // logout user
   app.post("/process-logout", function(req: express.Request, res: express.Response) {
