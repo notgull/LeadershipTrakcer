@@ -3,7 +3,7 @@
 import { getParameter } from "./parameter";
 
 // handle errors in a default way
-export type ErrorMap = { [key: number]: string };
+export type ErrorMap = { [key: number]: string | () => string };
 
 // process errors from parameter
 export function processErrors(errorMap: ErrorMap) {
@@ -22,6 +22,11 @@ export function processErrors(errorMap: ErrorMap) {
     let keys: Array<number> = <Array<number>>(<any>Object.keys(errorMap)); // I don't know why TS doesn't catch this
     for (const errInstance of keys) {
       if (error & errInstance) {
+        let errMsg = errorMap[errInstance];
+        if (errMsg instanceof function) {
+          errMsg = errMsg();
+        }
+
         errorList.innerHTML += `<li>${errorMap[errInstance]}</li>`;
       }
     }

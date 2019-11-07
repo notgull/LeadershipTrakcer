@@ -18,3 +18,8 @@ script:
 
 after_script:
  - npm run coverage
+
+notifications:
+  email:
+    on_sucess: change
+    on_failure: always
