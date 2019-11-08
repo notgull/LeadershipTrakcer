@@ -107,7 +107,7 @@ export function foundCreatestudent() {
     return;
   }
 
-  processError(errMap);
+  processErrors(errMap);
   const submitButton = document.getElementById("submit");
   if (submitButton) submitButton.onclick = processNewStudent;
   addBeltrankTeller();

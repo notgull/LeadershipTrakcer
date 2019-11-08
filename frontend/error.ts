@@ -3,7 +3,8 @@
 import { getParameter } from "./parameter";
 
 // handle errors in a default way
-export type ErrorMap = { [key: number]: string | () => string };
+type StringResult = () => string;
+export type ErrorMap = { [key: number]: string | StringResult };
 
 // process errors from parameter
 export function processErrors(errorMap: ErrorMap) {
@@ -23,7 +24,8 @@ export function processErrors(errorMap: ErrorMap) {
     for (const errInstance of keys) {
       if (error & errInstance) {
         let errMsg = errorMap[errInstance];
-        if (errMsg instanceof function) {
+        if (!(errMsg instanceof String)) {
+          // @ts-ignore
           errMsg = errMsg();
         }
 

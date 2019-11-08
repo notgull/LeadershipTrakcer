@@ -8,7 +8,7 @@
 import { Nullable } from "./utils";
 import { query } from "./sql"
 
-class EventRecord {
+export class EventRecord {
   eventName: string;
   pts: number;
   date: Date;

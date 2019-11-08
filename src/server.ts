@@ -13,6 +13,7 @@ import * as path from "path";
 import { Belt, parseBelt } from "./belt";
 import { checkUsernameUsage, checkEmailUsage } from "./users/check-existence";
 import { emailRegex, Nullable } from "./utils";
+import { EventRecord } from "./eventRecord";
 import { initializeSchema } from './schema';
 import { readFile } from "./promises";
 import { render } from "./render";

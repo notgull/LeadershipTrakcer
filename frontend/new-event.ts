@@ -42,8 +42,8 @@ function processNewEvent() {
   const data: NewEventForm = (<any>document.getElementById("eventform"));
   const {eventName, eventDate, eventPoints, eventDescription} = data;
 
-  let date = eventDate.value;
-  if (date instanceof Date) {
+  let date: string | Date = eventDate.value;
+  if (typeof date !== "string") {
     date = dateformat(date, "mm/dd/yyyy"); 
   }
 
@@ -52,7 +52,7 @@ function processNewEvent() {
   if (isFieldEmpty(eventDate)) error |= 4;
   if (isFieldEmpty(eventDate)) error |= 8;
 
-  if (!(/\d\d\/\d\d\/\d\d(\d\d)?/.match(date))) error |= 1;
+  if (!(/\d\d\/\d\d\/\d\d(\d\d)?/.test(date))) error |= 1;
 
   if (error !== 0) {
     let errUrl = `/new-event?errors=${error}`;
