@@ -45,7 +45,7 @@ interface NewEventForm {
   eventDate: HTMLInputElement;
   eventPoints: HTMLInputElement;
   eventDescription: HTMLInputElement;
-};
+}
 
 function processNewEvent() {
   const data: NewEventForm = (<any>document.getElementById("eventform"));
@@ -67,8 +67,7 @@ function processNewEvent() {
       eventDate: eventDate.value,
       eventPoints: eventPoints.value,
       eventDescription: eventDescription.value
-
-    };
+    }
 
     sendPostData(url, params);
   }
@@ -78,8 +77,7 @@ let keyTimer: ReturnType<typeof setTimeout>;
 const stopInterval = 100;
 
 //add an event to make
-/*
-function addBeltrankTeller() {
+function addEventTeller() {
   const beltInput = <HTMLInputElement>document.getElementById("beltrank");
   const teller = document.getElementById("beltrankteller");
 

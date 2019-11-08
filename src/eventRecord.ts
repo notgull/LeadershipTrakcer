@@ -8,15 +8,15 @@
 import {query} from "./sql"
 
 class EventRecord {
-  eventName: string;
-  pts: number;
+  name: string;
+  points: number;
   date: Date;
   description: string;
   eventId: number;
 
   constructor(n: string, p: number, d: Date, des: string) { // Constructor to create a named event with the number of points it needs to add
-    this.eventName = n;
-    this.pts = p;
+    this.name = n;
+    this.points = p;
     this.date = d;
     this.description = des;
 
@@ -26,7 +26,7 @@ class EventRecord {
 
   async pushQuery(): Promise<void>{
     let res = await query(`INSERT INTO Event (eventName, pts, date, eventId, description) VALUES ($1, $2, $3, $4, $5), RETURNING eventId;`,
-                        [this.eventName, this.pts, this.date, this.eventId, this.description]);
+                        [this.name, this.points, this.date, this.eventId, this.description]);
 
     this.eventId = res.rows[0].eventId; // Get the event id
   }
