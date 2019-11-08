@@ -272,7 +272,7 @@ export async function getServer(): Promise<express.Application> {
     try {
       let error = 0;
       if (eventName.trim().length === 0) error |= 4;
-      if ((date.trim()) !== "") error |= 8;
+      if (date.trim().length === 0) error |= 8;
       if (pts.trim().length === 0) error |= 16;
       if (description.trim().length === 0) error |= 32;
 

@@ -53,5 +53,10 @@ class EventRecord {
   // load all in database
   static async loadAll(): Promise<Array<EventRecord>> {
     let res = await query("SELECT * FROM Events ORDER BY date DESC;", []);
+    let array = [];
+    for (const row of res) {
+      array.push(EventRecord.fromRow(row));
+    }
+    return res;
   }
 }
