@@ -54,7 +54,7 @@ export class User {
       row.username,
       row.email,
       row.pwhash,
-      new Buffer(JSON.parse(row.salt).data),
+      Buffer.from(JSON.parse(row.salt).data),
       row.isAdmin
     );
   }
