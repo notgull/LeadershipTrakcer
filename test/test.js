@@ -5,7 +5,7 @@ const { assert, expect } = chai;
 chai.use(require("chai-http"));
 
 const { Attendance } = require("../dist/backend/attendance");
-const { eventRecord } = require("../dist/backend/eventRecord")
+const { EventRecord } = require("../dist/backend/eventRecord")
 const { getServer } = require("../dist/backend/server");
 const { removeAll } = require("../bin/reset_db");
 const { Student } = require("../dist/backend/student");
@@ -333,13 +333,27 @@ describe("Automated Testing of LeadershipTrakcer", function() {
   const event1Title = "test placing";
   const event1Points = 10;
   const event1Date = new Date();
+  const event1Desc = "test description";
 
   function createEvent(done) {
-    event1 = new EventRecord(event1Title, event1Points, event1Date);
-    event1.submit().then(done);
+    event1 = new EventRecord(event1Title, event1Points, event1Date, event1Desc);
+    event1.submit().then(done).catch((err) => { throw err; });
+  }
+
+  function createAttendance(attended, done) {
+    if (!testUser) {
+      throw new Error("Test user does not exist");
+    }
+
+    Attendance.setAttendance(testUser.studentId, event1.eventId, attended).done(done)
+      .catch((err) => { throw err; });
   }
 
   describe("Testing events and attendance record", () => {
-     
+    beforeEach((done) => {
+      createEvent(done);
+    });
+
+    it("Create a new event", () => {});
   });
 });

@@ -20,7 +20,7 @@ export async function initializeSchema(): Promise<void> {
                           isAdmin BOOLEAN NOT NULL);`;
   const eventTableSql = `CREATE TABLE IF NOT EXISTS Events (
                            eventId BIGSERIAL PRIMARY KEY,
-                           eventName TEXT NOT NULL,
+                           name TEXT NOT NULL,
                            points INTEGER NOT NULL,
                            date TIMESTAMP NOT NULL,
                            description TEXT NOT NULL);`;

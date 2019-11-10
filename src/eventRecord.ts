@@ -26,8 +26,9 @@ export class EventRecord {
   }
 
   async submit(): Promise<void>{
-    let res = await query(`INSERT INTO Events (eventName, pts, date, eventId, description) VALUES ($1, $2, $3, $4, $5), RETURNING eventId;`,
-                        [this.eventName, this.pts, this.date, this.eventId, this.description]);
+    let res = await query(`INSERT INTO Events (name, points, date, description) 
+                           VALUES ($1, $2, $3, $4) RETURNING eventId;`,
+                          [this.eventName, this.pts, this.date, this.description]);
 
     this.eventId = res.rows[0].eventId; // Get the event id
   }
@@ -51,12 +52,14 @@ export class EventRecord {
   }
 
   // load all in database
-  static async loadAll(): Promise<Array<EventRecord>> {
-    let res = await query("SELECT * FROM Events ORDER BY date DESC;", []);
+  static async loadAll(page: number = 0, limit: number = 9999): Promise<Array<EventRecord>> {
+    const offset = page * limit;
+
+    let res = await query("SELECT * FROM Events ORDER BY date DESC OFFSET $1 LIMIT $2;", [offset, limit]);
     let array = [];
-    for (const row of res) {
+    for (const row of res.rows) {
       array.push(EventRecord.fromRow(row));
     }
-    return res;
+    return array;
   }
 }
