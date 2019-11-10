@@ -1,6 +1,6 @@
 language: node_js
 node_js:
- - 8.10.0
+ - 10.17.0
 services:
  - postgresql
 
@@ -18,3 +18,8 @@ script:
 
 after_script:
  - npm run coverage
+
+notifications:
+  email:
+    on_sucess: change
+    on_failure: always

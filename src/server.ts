@@ -13,6 +13,7 @@ import * as path from "path";
 import { Belt, parseBelt } from "./belt";
 import { checkUsernameUsage, checkEmailUsage } from "./users/check-existence";
 import { emailRegex, Nullable } from "./utils";
+import { EventRecord } from "./eventRecord";
 import { initializeSchema } from './schema';
 import { readFile } from "./promises";
 import { render } from "./render";
@@ -272,7 +273,7 @@ export async function getServer(): Promise<express.Application> {
     try {
       let error = 0;
       if (eventName.trim().length === 0) error |= 4;
-      if ((date.trim()).toString !== "") error |= 8;
+      if (date.trim().length === 0) error |= 8;
       if (pts.trim().length === 0) error |= 16;
       if (description.trim().length === 0) error |= 32;
 
@@ -284,7 +285,7 @@ export async function getServer(): Promise<express.Application> {
 
       // check for name/date combination
       if (error === 0) {
-        if (await Student.checkCombination(eventName, date)) error |= 1;
+        if (await EventRecord.checkCombination(eventName, date)) error |= 1;
       }
 
       if (error) {
@@ -305,11 +306,6 @@ export async function getServer(): Promise<express.Application> {
       res.clearCookie("sessionId");
     }
     res.redirect("/");
-  });
-
-  app.get("/create-event", async function(req: express.Request, res: express.Response) {
-    const page = await readFile("html/createEvent.html");
-    res.send(render(page.toString(), getUsername(req)));
   });
  
   // main page

@@ -326,4 +326,19 @@ describe("Automated Testing of LeadershipTrakcer", function() {
       });
     });
   });
+
+  let event1;
+  const event1Title = "test placing";
+  const event1Points = 10;
+  const event1Date = new Date();
+
+  function createEvent(done) {
+    
+  }
+
+  describe("Testing events and attendance record", () => {
+  
+
+    
+  });
 });
