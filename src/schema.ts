@@ -35,11 +35,11 @@ export async function initializeSchema(): Promise<void> {
          total INTEGER;
          rp INTEGER;
        BEGIN
-         SELECT SUM(Events.points) + Students.rp INTO total
+         SELECT SUM(Events.points) + SUM(Students.rp) INTO total
          FROM Attendance
          INNER JOIN Events ON Attendance.eventId=Events.eventId
-         INNER JOIN Students ON Students.studentId = sid
-         WHERE Attendance.studentId = sid;
+         INNER JOIN Students ON Students.studentId=Attendance.studentId
+         WHERE Students.studentId = sid;
          RETURN total;
        END; $$
        LANGUAGE PLPGSQL;`;
