@@ -1,13 +1,15 @@
 // BSD LICENSE - c John Nunley and Larson Rivera
 
-let chai = require("chai");
-let { assert, expect } = chai;
+const chai = require("chai");
+const { assert, expect } = chai;
 chai.use(require("chai-http"));
 
-let { getServer } = require("../dist/backend/server");
-let { removeAll } = require("../bin/reset_db");
-let { Student } = require("../dist/backend/student");
-let { User } = require("../dist/backend/users");
+const { Attendance } = require("../dist/backend/attendance");
+const { eventRecord } = require("../dist/backend/eventRecord")
+const { getServer } = require("../dist/backend/server");
+const { removeAll } = require("../bin/reset_db");
+const { Student } = require("../dist/backend/student");
+const { User } = require("../dist/backend/users");
 
 // automated testing
 describe("Automated Testing of LeadershipTrakcer", function() {
@@ -333,12 +335,11 @@ describe("Automated Testing of LeadershipTrakcer", function() {
   const event1Date = new Date();
 
   function createEvent(done) {
-    
+    event1 = new EventRecord(event1Title, event1Points, event1Date);
+    event1.submit().then(done);
   }
 
   describe("Testing events and attendance record", () => {
-  
-
-    
+     
   });
 });

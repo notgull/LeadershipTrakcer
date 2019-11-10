@@ -8,20 +8,31 @@ import { Student } from "./../student";
 
 const limit = 30;
 
-export default async function getDiagramHTML(page: number): Promise<string> {
-  const tableHeader =
+const numEvents = 8;
+
+const tableHeader =
     `<table>
        <tr>
          <th>Name</th>
          <th>Leadership Points</th>
        </tr>`; // TODO: events and such
-  const tableBody = 
+const tableBody = 
     `  <tr>
-         <td>{{ name }}</td>
-         <td>{{ leadershipPoints }}</td>
+         <form id="event-diagram-{{studentId}}">
+           <td>{{ name }}</td>
+           {{ events }}
+           <td>{{ leadershipPoints }}</td>
+         </form>
        </tr>`;
-  const tableEnd = 
+const eventBody = 
+  `<td>
+     <input type="checkbox" id="event-checkbox={{eventId}} name="event-checkbox-{{eventId}} />
+   </td>`;
+const tableEnd = 
     `</table>`;
+
+export default async function getDiagramHTML(page: number): Promise<string> {
+
 
   // sew it all together
   let parts = [tableHeader];
