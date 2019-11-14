@@ -7,6 +7,8 @@ import { Attendance, AttendanceList } from "./../attendance";
 import { EventRecord } from "./../eventRecord";
 import { Student } from "./../student";
 
+nunjucks.configure({ autoescape: false });
+
 const limit = 30;
 
 const numEvents = 8;
@@ -27,7 +29,7 @@ const tableBody =
        </tr>`;
 const eventBody = 
   `<td>
-     <input type="checkbox" id="event-checkbox={{eventId}} name="event-checkbox-{{eventId}} {{checked}}/>
+     <input type="checkbox" id="event-checkbox={{eventId}} name="event-checkbox-{{eventId}}" {{checked}} />
    </td>`;
 const tableEnd = 
     `</table>`;
@@ -80,6 +82,7 @@ export default async function getDiagramHTML(page: number, eventPage: number): P
       leadershipPoints: await Attendance.getUserPoints(student.studentId),
       studentId: student.studentId
     });
+    console.log(row);
     parts[index] = row;
   }
 

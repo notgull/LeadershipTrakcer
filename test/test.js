@@ -235,6 +235,8 @@ describe("Automated Testing of LeadershipTrakcer", function() {
     });
   }
 
+  let testStudent;
+
   // tests to ensure that the student modules are working
   describe("Testing student modules", function() {
     let student1;
@@ -251,9 +253,7 @@ describe("Automated Testing of LeadershipTrakcer", function() {
     const student2Last = "Smith";
     const student2Belt = "Red";
     const student2Rp = 10;
-    student2 = new Student(student2First, student2Last, student2Belt, student2Rp);
-
-    let testStudent;
+    student2 = new Student(student2First, student2Last, student2Belt, student2Rp);  
 
     describe("Add, then retrieve student from database", function() {
       it("Students need to have an associated user to be added to the database", function(done) {
@@ -335,6 +335,17 @@ describe("Automated Testing of LeadershipTrakcer", function() {
   const event1Date = new Date();
   const event1Desc = "test description";
 
+  const student2First = "Gray";
+  const student2Last = "Smith";
+  const student2Belt = "Red";
+  const student2Rp = 10; 
+
+  function createTestStudent(done) {
+    testStudent = new Student(student2First, student2Last, student2Belt, student2Rp);  
+    testStudent.userId = testUser.userId;
+    testStudent.submit().then(done).catch((err) => { throw err; });
+  }
+
   function createEvent(done) {
     event1 = new EventRecord(event1Title, event1Points, event1Date, event1Desc);
     event1.submit().then(done).catch((err) => { throw err; });
@@ -345,13 +356,21 @@ describe("Automated Testing of LeadershipTrakcer", function() {
       throw new Error("Test user does not exist");
     }
 
-    Attendance.setAttendance(testUser.studentId, event1.eventId, attended).done(done)
+    console.log(testStudent.studentId);
+    console.log(event1.eventId);
+    Attendance.setAttendance(testUser.studentId, event1.eventId, attended).then(done)
       .catch((err) => { throw err; });
   }
 
   describe("Testing events and attendance record", () => {
     beforeEach((done) => {
-      createEvent(done);
+      createTestUser(function() {
+        createTestStudent(function() {
+          createEvent(function() {
+            createAttendance(true, done);
+          });
+        });
+      });
     });
 
     it("Create a new event", () => {});

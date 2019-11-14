@@ -9,7 +9,7 @@ export class Attendance {
   // get all of the user points
   static async getUserPoints(studentId: number): Promise<number> {
     let res = await query("SELECT getUserPoints($1) as totalpoints;", [studentId]);
-    console.log(res);
+    //console.log(res);
 
     if (res.rowCount === 0) return 0; 
 

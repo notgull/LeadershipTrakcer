@@ -1,4 +1,4 @@
-// this file will drop all of the tables if executed
+
 // change this to "false" if this is ever run in a production environment. we shouldn't take the chance.
 const should_tables_be_deleted = true;
 
@@ -12,6 +12,7 @@ var sql = require('./../dist/backend/sql');
 async function removeAll() {
   const query = `
     DROP TABLE Users CASCADE; DROP TABLE Students CASCADE;
+    DROP TABLE Events CASCADE; DROP TABLE Attendance CASCADE;
   `;
 
   await sql.query(query, []);

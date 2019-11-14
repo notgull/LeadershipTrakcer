@@ -27,10 +27,11 @@ export class EventRecord {
 
   async submit(): Promise<void>{
     let res = await query(`INSERT INTO Events (name, points, date, description) 
-                           VALUES ($1, $2, $3, $4) RETURNING eventId;`,
+                           VALUES ($1, $2, $3, $4) RETURNING eventid;`,
                           [this.eventName, this.pts, this.date, this.description]);
 
-    this.eventId = res.rows[0].eventId; // Get the event id
+    this.eventId = res.rows[0].eventid; // Get the event id
+    console.log(`Returned eventId ${this.eventId}`);
   }
 
   // test to see if a f/l combination exists
