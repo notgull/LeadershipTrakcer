@@ -50,12 +50,12 @@ export class User {
   // load a user object from a database row
   static fromRow(row: any): User {
     return new User(
-      row.userId,
+      row.userid,
       row.username,
       row.email,
       row.pwhash,
       Buffer.from(JSON.parse(row.salt).data),
-      row.isAdmin
+      row.isadmin
     );
   }
 
@@ -89,7 +89,9 @@ export class User {
                         VALUES ($1, $2, $3, $4, $5) RETURNING userId;`;
     //console.log(`Adding user ${username} into database`);
     const res = await query(addUserSql, [username, pwhash, email, stringifiedSalt, isAdmin]);
-    return new User(res.rows[0].userId, username, email, pwhash, salt, isAdmin);
+    let user = new User(res.rows[0].userId, username, email, pwhash, salt, isAdmin);
+    user.userId = res.rows[0].userid;
+    return user;
   }
 
   // submit user details

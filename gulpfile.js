@@ -40,4 +40,4 @@ gulp.task("frontend-browserify", () => {
     .pipe(fs.createWriteStream("dist/bundle.js"));
 });
 
-gulp.task("default", gulp.series("backend", "frontend-ts", "frontend-browserify"));
+gulp.task("default", gulp.parallel("backend", gulp.series("frontend-ts", "frontend-browserify")));
