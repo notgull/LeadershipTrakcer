@@ -110,9 +110,80 @@ describe("Testing user systems", () => {
 
       chai.request(server).post("/process-login").type("form").send(userData).end((err, res) => {
         expect(err).to.be.null;
-        expect(res).to.redirect;
+        expect(res).to.redirectTo(/\//);
         done();
       });
     });
+
+    it("Login as nonexistent user", (done) => {
+      const userData = {
+        username: "irrelevant",
+        password: "irrelevant"
+      };
+
+      chai.request(server).post("/process-login").type("form").send(userData).end((err, res) => {
+        expect(err).to.be.null;
+        expect(res).to.redirectTo(/login\?errors=1/);
+        done();
+      });
+    });
+
+    it("Login as existing user with wrong password", (done) => {
+      const userData = {
+        username: user1Username,
+        password: "irrelevant"
+      };
+
+      let startTime = new Date();
+
+      chai.request(server).post("/process-login").type("form").send(userData).end((err, res) => {
+        expect(err).to.be.null;
+        expect(res).to.redirectTo(/login\?errors=1/);
+        expect(new Date() - startTime).to.be.greaterThan(999, "Expected delay of 1000 ms");
+        done();
+      });
+    });
+  });
+
+  describe("Testing registration interface", () => {
+    it("Register with valid information", (done) => {
+      const userData = {
+        username: "user3",
+        password: "password3",
+        email: "user3@test.com"
+      };
+
+      chai.request(server).post("/process-register").type("form").send(userData).end((err, res) => {
+        expect(err).to.be.null;
+        expect(res).to.redirectTo(/\//);
+        done();
+      });
+    });
+
+    function expectsErr(username, password, email, expectsCode, done) {
+      const userData = {
+        username, password, email
+      };
+
+      chai.request(server).post("/process-register").type("form").send(userData).end((err, res) => {
+        expect(err).to.be.null;
+        expect(res).to.redirectTo(new RegExp(`register\\?errors=${expectsCode}`));
+        done();
+      });
+    }
+
+    it("Register with existing username", (done) => { 
+      expectsErr(user1Username, "irrelevant", "irrelevant@test.com", 512, done);
+    });
+
+    it("Register with existing email", (done) => {
+      expectsErr("irrelevant", "irrelevant", user1Email, 1024, done);
+    });
+  });
+});
+
+describe("Testing student-related functions", () => {
+  describe("Ensuring student integrity", () => {
+    it("Load student from database");
   });
 });

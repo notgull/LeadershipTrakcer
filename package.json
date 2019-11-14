@@ -4,7 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "node node_modules/mocha/bin/mocha",
+    "test": "node node_modules/mocha/bin/mocha --timeout 10000",
     "gulp": "node node_modules/gulp/bin/gulp.js",
     "server": "node dist/backend/index.js",
     "coverage": "node node_modules/nyc/bin/nyc.js npm test && node_modules/nyc/bin/nyc.js report --reporter=text-lcov | node node_modules/coveralls/bin/coveralls.js"
