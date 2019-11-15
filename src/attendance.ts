@@ -38,11 +38,11 @@ export class Attendance {
   }
 
   static async getAttendanceList(eventId: number): Promise<AttendanceList> {
-    const res = await query("SELECT attended, studentId FROM Attendance WHERE eventId=$1;", [eventId]);
+    const res = await query("SELECT attended, studentid FROM Attendance WHERE eventId=$1;", [eventId]);
     let attendanceList: AttendanceList = {};
    
     for (const row of res.rows) {
-      attendanceList[row.studentId] = row.attended;
+      attendanceList[row.studentid] = row.attended;
     }
 
     return attendanceList;

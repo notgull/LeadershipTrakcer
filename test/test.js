@@ -246,6 +246,14 @@ describe("Testing event and attendance record", () => {
     await testAttendance(student2.studentId, event2.eventId, false);
   });
 
+  it("Ensure attendance list integrity", async () => {
+    let list = await Attendance.getAttendanceList(event2.eventId);
+
+    expect(Object.keys(list)).to.have.lengthOf(2);
+    expect(list[student1.studentId]).to.equal(true);
+    expect(list[student2.studentId]).to.equal(false);
+  });
+
   describe("Testing total number of points", () => {
     let expectedUser1Pts;
     let expectedUser2Pts;   
