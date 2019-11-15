@@ -50,7 +50,7 @@ export class User {
   // load a user object from a database row
   static fromRow(row: any): User {
     return new User(
-      row.userid,
+      parseInt(row.userid, 10),
       row.username,
       row.email,
       row.pwhash,
@@ -90,7 +90,7 @@ export class User {
     //console.log(`Adding user ${username} into database`);
     const res = await query(addUserSql, [username, pwhash, email, stringifiedSalt, isAdmin]);
     let user = new User(res.rows[0].userId, username, email, pwhash, salt, isAdmin);
-    user.userId = res.rows[0].userid;
+    user.userId = parseInt(res.rows[0].userid, 10);
     return user;
   }
 

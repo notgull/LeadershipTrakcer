@@ -41,7 +41,7 @@ export class EventRecord {
   }
 
   static fromRow(row: any): EventRecord {
-    let ev = new EventRecord(row.eventname, row.points, row.date, row.description);
+    let ev = new EventRecord(row.name, row.points, row.date, row.description);
     ev.eventId = row.eventid;
     return ev;
   }

@@ -14,6 +14,7 @@ export class Attendance {
     if (res.rowCount === 0) return 0; 
 
     console.log(`Resulting user point total is ${res.rows[0].totalpoints}`);
+    if (!res.rows[0].totalpoints) return 0;
 
     return res.rows[0].totalpoints;
   }

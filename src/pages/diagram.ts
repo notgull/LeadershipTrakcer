@@ -14,11 +14,13 @@ const limit = 30;
 const numEvents = 8;
 
 const tableHeader =
-    `<table>
+    `<table border="1">
        <tr>
          <th>Name</th>
+         {{ event_names }}
          <th>Leadership Points</th>
        </tr>`; // TODO: events and such
+const eventName = "<th>{{ event_name }}</th>";
 const tableBody = 
     `  <tr>
          <form id="event-diagram-{{studentId}}">
@@ -29,14 +31,14 @@ const tableBody =
        </tr>`;
 const eventBody = 
   `<td>
-     <input type="checkbox" id="event-checkbox={{eventId}} name="event-checkbox-{{eventId}}" {{checked}} />
+     <input type="checkbox" id="event-checkbox={{eventId}}" name="event-checkbox-{{eventId}}" {{checked}} />
    </td>`;
 const tableEnd = 
     `</table>`;
 
 export default async function getDiagramHTML(page: number, eventPage: number): Promise<string> {
   // sew it all together
-  let parts = [tableHeader];
+  let parts = [];
 
   let promises = [];
 
@@ -47,6 +49,13 @@ export default async function getDiagramHTML(page: number, eventPage: number): P
   ]);
   const students = results[0];
   const events = results[1];
+
+  // iterate through events to setup names
+  let eventNamesParts = [];
+  for (const event of events) { 
+    eventNamesParts.push(nunjucks.renderString(eventName, { event_name: event.eventName }));
+  }
+  parts.push(nunjucks.renderString(tableHeader, { event_names: eventNamesParts.join("") }));
 
   // also get the attendance record
   let eventAttendance: Array<AttendanceList> = await Promise.all(events.map(
@@ -64,25 +73,29 @@ export default async function getDiagramHTML(page: number, eventPage: number): P
     for (let i = 0; i < events.length; i++) {
       eventId = events[i].eventId;
       attendanceList = eventAttendance[i];
+      console.log(attendanceList);
 
       // student id is key in the event list
       checkboxes.push(nunjucks.renderString(eventBody, {
         eventId: eventId,
-        checked: attendanceList[studentId] ? "checked" : ""  
+        checked: (function() {
+          if (attendanceList[studentId]) return "checked";
+          else return "";
+        })() 
       })); 
     }
     return checkboxes.join("\n");
   }
 
   async function generateRow(index: number, student: Student): Promise<void> {
-    console.log(`StudentId is ${student.studentId}`);
+    //console.log(`StudentId is ${student.studentId}`);
     const row = nunjucks.renderString(tableBody, {
       events: generateEventCheckboxes(student.studentId),
       name: `${student.first} ${student.last}`,
       leadershipPoints: await Attendance.getUserPoints(student.studentId),
       studentId: student.studentId
     });
-    console.log(row);
+    //console.log(row);
     parts[index] = row;
   }
 

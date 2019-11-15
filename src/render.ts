@@ -32,7 +32,7 @@ export function render(content: string, username: Nullable<string>): string {
     loginbar = lbar;
   }
  
-  return env.render('template.html', { 
+  return env.render("template.html", { 
     content: content,
     loginbar: loginbar
   });

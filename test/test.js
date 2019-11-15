@@ -1,5 +1,7 @@
 // BSD LICENSE - c John Nunley and Larson Rivera
 
+"use strict";
+
 const chai = require("chai");
 const { assert, expect } = chai;
 chai.use(require("chai-http"));
@@ -90,7 +92,7 @@ describe("Testing user systems", () => {
     let testUser;
 
     // make sure the user loads properly
-    it("Load user from database", async () => {
+    it("load from database", async () => {
       testUser = await User.loadByUsername(user1Username);
     });
     it("#userId", () => { expect(testUser).to.have.property("userId", user1.userId); });
@@ -102,7 +104,7 @@ describe("Testing user systems", () => {
   });
 
   describe("Testing login interface", () => {
-    it("Login as existing user", (done) => {
+    it("as existing user", (done) => {
       const userData = {
         username: user1Username,
         password: user1Password
@@ -115,7 +117,7 @@ describe("Testing user systems", () => {
       });
     });
 
-    it("Login as nonexistent user", (done) => {
+    it("as nonexistent user", (done) => {
       const userData = {
         username: "irrelevant",
         password: "irrelevant"
@@ -128,7 +130,7 @@ describe("Testing user systems", () => {
       });
     });
 
-    it("Login as existing user with wrong password", (done) => {
+    it("as existing user with wrong password", (done) => {
       const userData = {
         username: user1Username,
         password: "irrelevant"
@@ -146,7 +148,7 @@ describe("Testing user systems", () => {
   });
 
   describe("Testing registration interface", () => {
-    it("Register with valid information", (done) => {
+    it("with valid information", (done) => {
       const userData = {
         username: "user3",
         password: "password3",
@@ -172,11 +174,11 @@ describe("Testing user systems", () => {
       });
     }
 
-    it("Register with existing username", (done) => { 
+    it("with existing username", (done) => { 
       expectsErr(user1Username, "irrelevant", "irrelevant@test.com", 512, done);
     });
 
-    it("Register with existing email", (done) => {
+    it("with existing email", (done) => {
       expectsErr("irrelevant", "irrelevant", user1Email, 1024, done);
     });
   });
@@ -184,6 +186,85 @@ describe("Testing user systems", () => {
 
 describe("Testing student-related functions", () => {
   describe("Ensuring student integrity", () => {
-    it("Load student from database");
+    let testStudent;
+
+    it("load from database", async () => {
+      testStudent = await Student.loadById(student1.studentId);
+    });
+
+    it("#studentId", () => { expect(testStudent).to.have.property("studentId", student1.studentId); });
+    it("#first", () => { expect(testStudent).to.have.property("first", student1.first); });
+    it("#last", () => { expect(testStudent).to.have.property("last", student1.last); });
+    it("#belt", () => { expect(testStudent).to.have.property("belt", student1.belt); });
+    it("#rp", () => { expect(testStudent).to.have.property("rp", student1.rp); });
+    it("#userId", () => { expect(testStudent).to.have.property("userId", student1.userId); });
+  });
+
+  describe("Load list of students from database", () => {
+    let studentList;
+
+    it("should proceed without errors", async () => {
+      studentList = await Student.loadAll(0, 10);
+    });
+
+    it("should have length of 2", () => { expect(studentList).to.have.lengthOf(2); });
+ 
+    describe("Ensuring list is sorted by last name", () => {
+      it(`should have ${student1Last} first`, () => { 
+        expect(studentList[0]).to.have.property("last", student1Last);
+       });
+      it(`should have ${student2Last} last`, () => {
+        expect(studentList[1]).to.have.property("last", student2Last);
+       });
+    });
+  });
+});
+
+describe("Testing event and attendance record", () => {
+  describe("Ensure event integrity", () => {
+    let testEvent;
+  
+    it("load from database", async () => {
+      testEvent = await EventRecord.loadById(event1.eventId);
+    });
+
+    it("#eventId", () => { expect(testEvent).to.have.property("eventId", event1.eventId); });
+    it("#eventName", () => { expect(testEvent).to.have.property("eventName", event1.eventName); });
+    it("#pts", () => { expect(testEvent).to.have.property("pts", event1.pts); });
+    it("#date", () => { expect(testEvent.date.toISOString()).to.equal(event1.date.toISOString()); });
+    it("#description", () => { expect(testEvent).to.have.property("description", event1.description); });
+  });
+
+  it("Ensure attendance integrity", async () => {
+    async function testAttendance(sid, eid, expected) {
+      expect(await Attendance.getAttendance(sid, eid)).to.equal(expected);
+    }
+
+    await testAttendance(student1.studentId, event1.eventId, true);
+    await testAttendance(student2.studentId, event1.eventId, true);
+    await testAttendance(student1.studentId, event2.eventId, true);
+    await testAttendance(student2.studentId, event2.eventId, false);
+  });
+
+  describe("Testing total number of points", () => {
+    let expectedUser1Pts;
+    let expectedUser2Pts;   
+
+    before(() => {
+      expectedUser1Pts = student1.rp + event1Points + event2Points;
+      expectedUser2Pts = student2.rp + event1Points;
+    });
+
+    it(`should return points for student1`, async () => {
+      let pts = await Attendance.getUserPoints(student1.studentId);
+      expect(pts).to.not.be.null;
+      expect(pts).to.equal(expectedUser1Pts);
+    });
+
+    it(`should return points for student2`, async () => {
+      let pts = await Attendance.getUserPoints(student2.studentId);
+      expect(pts).to.not.be.null;
+      expect(pts).to.equal(expectedUser2Pts);
+    });
   });
 });
