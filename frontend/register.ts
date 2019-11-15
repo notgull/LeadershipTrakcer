@@ -49,7 +49,7 @@ interface RegistrationForm {
 function processRegistration() {
   const data: RegistrationForm = (<any>document.getElementById("registerForm"));
   const { email, confirmEmail, password, confirmPassword, username } = data;
-  
+
   // check for errors
   let error = 0;
   if (isFieldEmpty(username)) error |= 1;
@@ -59,7 +59,7 @@ function processRegistration() {
   else if (password.value.trim().length < 8) error |= 256;
 
   if (isFieldEmpty(email)) error |= 4;
-  else if (email.value !== confirmEmail.value) error |= 16; 
+  else if (email.value !== confirmEmail.value) error |= 16;
   else if (!(emailRegex.test(email.value))) error != 128;
 
   if (error !== 0) {
@@ -67,19 +67,19 @@ function processRegistration() {
     window.location.href = errUrl;
   } else {
     const url = `/process-register`;
-    const params = { 
+    const params = {
       username: username.value,
       password: password.value,
       email: email.value
     };
-    
+
     sendPostData(url, params); 
   }
 }
 
 // function to run if the register element is found
 export function foundRegister() {
-  processErrors(errMap); 
+  processErrors(errMap);
   let submitButton = document.getElementById("submit");
   if (submitButton) {
     submitButton.onclick = processRegistration;
