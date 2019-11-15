@@ -312,6 +312,8 @@ export async function getServer(): Promise<express.Application> {
   app.get("/", async function(req: express.Request, res: express.Response) {
     cookieDuplicate(req, res);
 
+    
+
     const page = req.query.page || 0;
     const eventPage = req.query.eventpage || 0;
 	  res.send(render(await getDiagram(page, eventPage), getUsername(req)));

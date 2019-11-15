@@ -14,7 +14,7 @@ const limit = 30;
 const numEvents = 8;
 
 const tableHeader =
-    `<table border="1">
+    `<table border="1" id="diagram-table">
        <tr>
          <th>Name</th>
          {{ event_names }}
@@ -31,12 +31,18 @@ const tableBody =
        </tr>`;
 const eventBody = 
   `<td>
-     <input type="checkbox" id="event-checkbox={{eventId}}" name="event-checkbox-{{eventId}}" {{checked}} />
+     <input type="checkbox" class="event-checkbox={{eventId}} {{ disabled }}" name="event-checkbox-{{eventId}}" {{checked}} />
    </td>`;
 const tableEnd = 
-    `</table>`;
+    `</table>
 
-export default async function getDiagramHTML(page: number, eventPage: number): Promise<string> {
+     <form id="submit-form"><input type="button" id="submit" value="Submit" class="vanished"/></form>`;
+
+export default async function getDiagramHTML(
+  page: number, 
+  eventPage: number, 
+  accessStudentId: Nullable<number> | string
+): Promise<string> {
   // sew it all together
   let parts = [];
 
@@ -81,7 +87,11 @@ export default async function getDiagramHTML(page: number, eventPage: number): P
         checked: (function() {
           if (attendanceList[studentId]) return "checked";
           else return "";
-        })() 
+        })(),
+        disabled: (function() {
+          if (accessStudentId === "admin" || accessStudentId === studentId) return "";
+          else return "disabled";
+        })()
       })); 
     }
     return checkboxes.join("\n");
