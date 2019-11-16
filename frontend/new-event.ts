@@ -4,9 +4,10 @@
 import { ErrorMap, processErrors } from "./error";
 import { getCookie } from "./cookie";
 import { getParameter } from "./parameter";
-import { isFieldEmpty } from "./utils";
+import { parse } from "querystring";
 import { sendPostData } from "./post";
 
+import * as $ from "jquery";
 import * as dateformat from "dateformat";
 
 /* New Event Errors (2^x)
@@ -31,26 +32,19 @@ const errMap: ErrorMap = {
   128: "An internal error occurred. Please contact the system administrators."
 };
 
-interface NewEventForm {
-  eventName: HTMLInputElement;
-  eventDate: HTMLInputElement;
-  eventPoints: HTMLInputElement;
-  eventDescription: HTMLInputElement;
-};
-
 function processNewEvent() {
-  const data: NewEventForm = (<any>document.getElementById("eventform"));
-  const {eventName, eventDate, eventPoints, eventDescription} = data;
+  const data = $("#eventform").serialize();
+  const {eventName, eventDate, eventPoints, eventDescription} = parse(data);
 
-  let date: string | Date = eventDate.value;
+  let date: string | Date = eventDate;
   if (typeof date !== "string") {
     date = dateformat(date, "mm/dd/yyyy"); 
   }
 
   let error = 0;
-  if (isFieldEmpty(eventName)) error |= 2;
-  if (isFieldEmpty(eventDate)) error |= 4;
-  if (isFieldEmpty(eventDate)) error |= 8;
+  if (!(eventName)) error |= 2;
+  if (!(eventDate)) error |= 4;
+  if (!(eventDate)) error |= 8;
 
   if (!(/\d\d\/\d\d\/\d\d(\d\d)?/.test(date))) error |= 1;
 
@@ -62,10 +56,10 @@ function processNewEvent() {
     const url = "/process-new-event";
 
     const params = {
-      eventName: eventName.value,
-      eventDate: date,
-      eventPoints: eventPoints.value,
-      eventDescription: eventDescription.value
+      eventName,
+      eventDate,
+      eventPoints,
+      eventDescription
     };
 
     sendPostData(url, params);
@@ -75,7 +69,7 @@ function processNewEvent() {
 let keyTimer: ReturnType<typeof setTimeout>;
 const stopInterval = 100;
 
-//add an event to make
+// add an event to make this work better
 
 export function foundCreateevent() {
   processErrors(errMap);

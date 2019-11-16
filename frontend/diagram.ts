@@ -1,4 +1,5 @@
 // BSD LICENSE - c John Nunley and Larson Rivera
+import * as jquery from "jquery";
 
 import { ChangeAttendance } from "./attendance-common";
 import { ErrorMap, processErrors } from "./error";
@@ -24,21 +25,21 @@ interface StudentForm {
 // contains which changes we have to make
 let attendanceChanges: Array<ChangeAttendance> = [];
 
-const submitButton = document.getElementById("submit");
+const submitButton = $("#submit");
 
 // add triggers to a row of checkboxes
-function addTriggerToRow(row: HTMLElement) {
-  let form = row.getElementsByTagName("form")[0];
-  let checkboxes = form.getElementsByTagName("input"); 
+function addTriggerToRow(row: jQuery) {
+  let form: HTMLFormElement = row.getElementsByTagName("form")[0];
 
-  let studentId = parseInt(form.id.split("-")[2], 10);
-  for (const checkbox of Array.from(checkboxes)) {
-    let eventId = parseInt(checkbox.classList[0].split("-")[2], 10);
+  let form = row.find("form")[0];
+  let checkboxes = $(form).find("input");
 
-    if (checkbox.classList.contains("disabled")) {
-      checkbox.onclick = function(): boolean { return false; };
-    } else {
-      checkbox.onchange = (function(sid: number, eid: number, cbox: HTMLInputElement) {
+  let studentId = parseInt(form.id().split("-")[2], 10);
+  checkboxes.each((checkbox: HTMLInputElement) => {
+    if (checkbox && !checkbox.disabled) {
+      let eventId = parseInt(checkbox.classList[0].split("-")[2], 10);
+
+      checkbox.onclick = (function(sid: number, eid: number, cbox: HTMLInputElement) {
         return function() {
           // loop through and determine which to edit
           for (let i = 0; i < attendanceChanges.length; i++) {
@@ -54,11 +55,11 @@ function addTriggerToRow(row: HTMLElement) {
             attendance: cbox.checked
           });
 
-          submitButton.classList.remove("vanished");
+          submitButton.removeClass("vanished");
         };
       })(studentId, eventId, checkbox);
     }
-  }
+  });
 }
 
 function submitAttendance() {
@@ -70,6 +71,8 @@ function submitAttendance() {
 }
 
 export function foundDiagram() {
+  console.log("Running diagram code"); 
+
   for (const row of Array.from(document.getElementsByTagName("tr"))) {
     if (row.getElementsByTagName("form").length !== 0) {
       addTriggerToRow(row);

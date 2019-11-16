@@ -10,7 +10,7 @@ const limit = 50;
 
 export default async function getLeaderboardHTML(page: number): Promise<string> {
   const tableHeader = 
-    `<table>
+    `<table border="1">
       <tr>
         <th>Place</th>
         <th>Name</th>

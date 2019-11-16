@@ -5,7 +5,7 @@ import { Belt, parseBelt } from "./belt";
 import { ErrorMap, processErrors } from "./error";
 import { getCookie } from "./cookie";
 import { getParameter } from "./parameter";
-import { isFieldEmpty } from "./utils";
+import { parse } from "querystring";
 import { sendPostData } from "./post";
 
 /* New Student Errors (2^x)
@@ -34,36 +34,30 @@ const errMap: ErrorMap = {
   64: "An internal error occurred. Please contact the system administrators."
 };
 
-interface NewStudentForm {
-  firstname: HTMLInputElement;
-  lastname: HTMLInputElement;
-  beltrank: HTMLInputElement;
-};
-
 function processNewStudent() {
-  const data: NewStudentForm = (<any>document.getElementById("studentform"));
-  const { firstname, lastname, beltrank } = data;
+  const data = $("#studentform").serialize();
+  const { firstname, lastname, beltrank } = parse(data);
 
   let error = 0;
-  if (isFieldEmpty(firstname)) error |= 4;
-  if (isFieldEmpty(lastname)) error |= 8;
+  if (!(firstname)) error |= 4;
+  if (!(lastname)) error |= 8;
 
-  if (isFieldEmpty(beltrank)) error |= 16;
-  else if (!parseBelt(beltrank.value)) error |= 2;
+  if (!(beltrank)) error |= 16;
+  else if (!parseBelt(beltrank)) error |= 2;
   
   if (error !== 0) {
     let errUrl = `/new-student?errors=${error}`;
     if (error & 2) {
-      errUrl += `&belt=${beltrank.value}`;
+      errUrl += `&belt=${beltrank}`;
     }
 
     window.location.href = errUrl;
   } else {
     const url = "/process-new-student";
     const params = {
-      first: firstname.value,
-      last: lastname.value,
-      belt: beltrank.value
+      first: firstname,
+      last: lastname,
+      belt: beltrank
     };
 
     sendPostData(url, params);
@@ -75,40 +69,41 @@ const stopInterval = 100;
 
 // add an event to make
 function addBeltrankTeller() {
-  const beltInput = <HTMLInputElement>document.getElementById("beltrank");
-  const teller = document.getElementById("beltrankteller");
+  const beltInput = $("#beltrank");
+  const teller = $("#beltrankteller");
 
-  if (beltInput && teller) {
+  if (beltInput.length() && teller.length()) {
     const tellBeltRank = function() {
-      const rank = parseBelt(beltInput.value);
+      const rank = parseBelt(beltInput.val());
       if (rank) {
-        teller.innerHTML = `You have input belt rank "${rank}"`;
+        teller.html(`You have input belt rank "${rank}"`);
       } else {
-        teller.innerHTML = "Unable to determine what belt your student is at";
+        teller.html("Unable to determine what belt your student is at");
       }
     }
 
-    beltInput.onkeyup = function () {
+    beltInput.keyup(() => {
       //console.log("Key up");
       clearTimeout(keyTimer);
       keyTimer = setTimeout(tellBeltRank, stopInterval);
-    };
+    });
 
-    beltInput.onkeydown = function () {
+    beltInput.keydown(() => {
       clearTimeout(keyTimer);
-    };
+    });
   }
 }
 
 // function to run if createstudent element is found
 export function foundCreatestudent() {
-  if (getCookie("sessionId").length === 0 || document.getElementById("loginlink")) {
-    document.getElementById("createstudent").innerHTML = "You must be logged in in order to create a new student";
+  if (getCookie("sessionId").length === 0 || !($("#loginlink").length())) {
+    $("#createstudent").html("You must be logged in in order to create a new student");
     return;
   }
 
   processErrors(errMap);
-  const submitButton = document.getElementById("submit");
-  if (submitButton) submitButton.onclick = processNewStudent;
+
+  $("#submit").click(processNewStudent);
+
   addBeltrankTeller();
 }

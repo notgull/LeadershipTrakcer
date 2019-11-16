@@ -24,6 +24,7 @@ import { Student } from "./student";
 import { User } from "./users/index";
 
 import getDiagram from "./pages/diagram";
+import getLeaderboard from "./pages/leaderboard";
 import getStudentManager from "./pages/manage-students";
 
 const sessionTable = new SessionTable();
@@ -353,6 +354,12 @@ export async function getServer(): Promise<express.Application> {
       res.redirect("/?errors=4");
       console.error(err);
     }
+  });
+
+  // leaderboard
+  app.get("/leaderboard", async function(req: express.Request, res: express.Response) {
+    const page = req.query.page || 0;
+    res.send(render(await getLeaderboard(page), getUsername(req)));
   });
  
   // main page

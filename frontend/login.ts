@@ -1,7 +1,9 @@
 // BSD LICENSE - c John Nunley and Larson Rivera
+import * as $ from "jquery";
 
 import { ErrorMap, processErrors } from "./error";
 import { getParameter } from "./parameter";
+import { parse } from "querystring";
 import { sendPostData } from "./post";
 
 /* Error Numbers
@@ -14,20 +16,16 @@ const errMap: ErrorMap = {
   2: "An internal error occurred, please consult the site administrators."
 };
 
-interface LoginForm {
-  username: HTMLInputElement;
-  password: HTMLInputElement;
-}
-
 // submit login details
 function processLogin() {
-  const data: LoginForm = (<any>document.getElementById("loginForm"));
-  const { username, password } = data;
+  // serialize the form then send the data
+  const data = $("#loginForm").serialize();
+  const { username, password } = parse(data);
 
   const url = "/process-login";
   const params = {
-    username: username.value,
-    password: password.value
+    username,
+    password
   };
 
   sendPostData(url, params);
@@ -37,7 +35,5 @@ function processLogin() {
 export function foundLogin() {
   processErrors(errMap);
   
-  const submitButton = document.getElementById("submit");
-  if (submitButton)
-    submitButton.onclick = processLogin;
+  $("#submit").click(processLogin);
 }

@@ -5,6 +5,9 @@
 const chai = require("chai");
 const { assert, expect } = chai;
 chai.use(require("chai-http"));
+const sinon = require("sinon");
+
+const { JSDOM } = require("jsdom");
 
 const { Attendance } = require("../dist/backend/attendance");
 const { EventRecord } = require("../dist/backend/eventRecord")
@@ -50,6 +53,8 @@ const event2Desc = "special train";
 
 let server;
 
+let errorFake;
+
 before(async () => {
   // clear the database
   try {
@@ -84,7 +89,7 @@ before(async () => {
   await Attendance.setAttendance(student1.studentId, event2.eventId, true);
   await Attendance.setAttendance(student2.studentId, event2.eventId, false);
 
-  console.log = function() { };
+  console.error = errorFake = sinon.spy();
 });
 
 describe("Testing user systems", () => {
@@ -288,4 +293,34 @@ describe("Testing event and attendance record", () => {
       expect(pts).to.equal(expectedUser2Pts);
     });
   });
+});
+
+describe("Load pages into a website simulator to test them", () => {
+  let window;
+  let document;
+
+  async function setupPage(uri) {
+    return new Promise((resolve) => {
+      chai.request(server).get(uri).send().end((err, res) => {
+        expect(err).to.be.null;
+      
+        window = (new JSDOM(res.text, {
+          runScripts: "dangerously"
+        })).window;
+        document = window.document;
+
+        expect(errorFake).to.have.property("callCount", 0);
+
+        resolve();
+      });
+    });
+  }
+
+  it("#/", async () => { await setupPage("/"); });
+  it("#/login", async () => { await setupPage("/login"); });
+  it("#/register", async () => { await setupPage("/register"); });
+  it("#/new-student", async () => { await setupPage("/new-student"); });
+  it("#/new-event", async () => { await setupPage("/new-event"); });
+  it("#/manage-students", async () => { await setupPage("/manage-students"); });
+  it("#/change-rp", async () => { await setupPage("/change-rp"); });
 });

@@ -1,10 +1,12 @@
 // BSD LICENSE - c John Nunley and Larson Rivera
 
 // functions related to the registration of new users
+import * as $ from "jquery";
 
-import { emailRegex, isFieldEmpty } from "./utils";
+import { emailRegex, ! } from "./utils";
 import { ErrorMap, processErrors } from "./error";
 import { getParameter } from "./parameter";
+import { parse } from "querystring";
 import { sendPostData } from "./post";
 
 /* Error Codes for Registration (2^x)
@@ -37,29 +39,21 @@ const errMap: ErrorMap = {
   2048: "An internal error occurred, please consult the system administrators"
 }
 
-interface RegistrationForm {
-  email: HTMLInputElement;
-  confirmEmail: HTMLInputElement;
-  password: HTMLInputElement;
-  confirmPassword: HTMLInputElement;
-  username: HTMLInputElement;
-};
-
 // process when button is clicked
 function processRegistration() {
-  const data: RegistrationForm = (<any>document.getElementById("registerForm"));
-  const { email, confirmEmail, password, confirmPassword, username } = data;
+  const data = $("#registerForm").serialize();
+  const { email, confirmEmail, password, confirmPassword, username } = parse(data);
 
   // check for errors
   let error = 0;
-  if (isFieldEmpty(username)) error |= 1;
+  if (!(username)) error |= 1;
 
-  if (isFieldEmpty(password)) error |= 2;
-  else if (password.value !== confirmPassword.value) error |= 8;
-  else if (password.value.trim().length < 8) error |= 256;
+  if (!(password)) error |= 2;
+  else if (password !== confirmPassword) error |= 8;
+  else if (password.trim().length < 8) error |= 256;
 
-  if (isFieldEmpty(email)) error |= 4;
-  else if (email.value !== confirmEmail.value) error |= 16;
+  if (!(email)) error |= 4;
+  else if (email !== confirmEmail) error |= 16;
   else if (!(emailRegex.test(email.value))) error != 128;
 
   if (error !== 0) {
@@ -68,9 +62,9 @@ function processRegistration() {
   } else {
     const url = `/process-register`;
     const params = {
-      username: username.value,
-      password: password.value,
-      email: email.value
+      username,
+      password,
+      email
     };
 
     sendPostData(url, params); 
@@ -80,8 +74,6 @@ function processRegistration() {
 // function to run if the register element is found
 export function foundRegister() {
   processErrors(errMap);
-  let submitButton = document.getElementById("submit");
-  if (submitButton) {
-    submitButton.onclick = processRegistration;
-  }
+
+  $("#submit").click(processRegistration);
 };

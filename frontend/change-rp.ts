@@ -19,12 +19,12 @@ const errMap: ErrorMap = {
 
 // submit rp details
 function processChangeRp() {
-  const rp = <HTMLInputElement>document.getElementById("rp");
+  const rp = $("rp");
   
   const url = "/process-change-rp";
   const params = {
     studentId: parseInt(getParameter("studentId"), 10),
-    rp: rp.value
+    rp: rp.val()
   };
 
   sendPostData(url, params);
@@ -34,10 +34,8 @@ export function foundChangeRp() {
   if (getParameter("errors") !== "8") {
     processErrors(errMap);
   } else {
-    document.getElementById("errorMessage").innerHTML = 'Success! <a href="/manage-students">Return to student management portal</a>.';
+    $("#errorMessage").html('Success! <a href="/manage-students">Return to student management portal</a>.');
   }
 
-  let submitButton = document.getElementById("submit");
-  if (submitButton)
-    submitButton.onclick = processChangeRp;
+  $("#submit").click(processChangeRp);
 }
