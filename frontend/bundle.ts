@@ -5,6 +5,7 @@
 import { foundChangeRp } from "./change-rp";
 import { foundCreateevent } from "./new-event";
 import { foundCreatestudent } from "./new-student";
+import { foundDiagram } from "./diagram";
 import { foundLogin } from "./login";
 import { foundRegister } from "./register";
 
@@ -34,5 +35,9 @@ window.onload = function() {
 
   if (document.getElementById("change-rp")) {
     foundChangeRp();
+  }
+
+  if (document.getElementById("diagram-table")) {
+    foundDiagram();
   }
 };

@@ -10,7 +10,9 @@ import * as https from 'https';
 import * as nunjucks from "nunjucks";
 import * as path from "path";
 
+import { Attendance } from "./attendance";
 import { Belt, parseBelt } from "./belt";
+import { ChangeAttendance } from "./attendance-common";
 import { checkUsernameUsage, checkEmailUsage } from "./users/check-existence";
 import { emailRegex, Nullable } from "./utils";
 import { EventRecord } from "./eventRecord";
@@ -50,11 +52,14 @@ function adminLock(req: express.Request, res: express.Response): boolean {
   }
 }
 
-function cookieDuplicate(req: express.Request, res: express.Response) {
+// duplicate login cookie if needed
+function cookieDuplicate(req: express.Request, res: express.Response): boolean {
   if (req.cookies.sessionIdClone) {
     res.cookie("sessionId", req.cookies.sessionIdClone, { maxAge: 8640000 });
     res.clearCookie("sessionIdClone");
+    return true;
   }
+  return false;
 }
 
 // main function
@@ -307,16 +312,72 @@ export async function getServer(): Promise<express.Application> {
     }
     res.redirect("/");
   });
+
+  // process user's attendance
+  app.post("/process-attendance", async function(req: express.Request, res: express.Response) {
+    // TODO: make this less of a copy and paste
+    let user = getUser(req);
+    let key;
+
+    try {
+      if (!user) {
+        key = [];
+      } else if (user.isAdmin) {
+        key = "admin";
+      } else {
+        key = (await Student.loadByUser(user.userId)).map((student: Student): number => {
+          return student.studentId;
+        });
+      }     
+
+      if (key.length === 0) {
+        res.redirect("/?errors=2");
+      }
+
+      // check to see if their operation is valid
+      let attendanceChanges: Array<ChangeAttendance> = req.body.attendance;
+      if (key !== "admin") {
+        for (const change of attendanceChanges) {
+          if ((<number[]>key).indexOf(change.studentId) === -1) {
+            res.redirect("/?errors=1");
+            return;
+          }
+        }
+      }
+
+      // make changes
+      for (const change of attendanceChanges) {
+        await Attendance.setAttendance(change.studentId, change.eventId, change.attendance);
+      }
+    } catch (err) {
+      res.redirect("/?errors=4");
+      console.error(err);
+    }
+  });
  
   // main page
   app.get("/", async function(req: express.Request, res: express.Response) {
-    cookieDuplicate(req, res);
+    if (cookieDuplicate(req, res)) {
+      res.redirect("/");
+      return;
+    }
 
-    
+    let user = getUser(req);
+    let key;
+
+    if (!user) {
+      key = [];
+    } else if (user.isAdmin) {
+      key = "admin";
+    } else {
+      key = (await Student.loadByUser(user.userId)).map((student: Student): number => {
+        return student.studentId;
+      });;
+    }
 
     const page = req.query.page || 0;
     const eventPage = req.query.eventpage || 0;
-	  res.send(render(await getDiagram(page, eventPage), getUsername(req)));
+	  res.send(render(await getDiagram(page, eventPage, key), getUsername(req)));
   });
 
   return app;

@@ -200,7 +200,7 @@ describe("Testing student-related functions", () => {
     it("#userId", () => { expect(testStudent).to.have.property("userId", student1.userId); });
   });
 
-  describe("Load list of students from database", () => {
+  describe("Load list of all students from database", () => {
     let studentList;
 
     it("should proceed without errors", async () => {
@@ -216,6 +216,19 @@ describe("Testing student-related functions", () => {
       it(`should have ${student2Last} last`, () => {
         expect(studentList[1]).to.have.property("last", student2Last);
        });
+    });
+  });
+
+  describe("Load list of students by user", () => {
+    let studentList;
+  
+    it("should proceed without errors", async () => {
+      studentList = await Student.loadByUser(user1.userId);
+    });
+
+    it("should have length of 1", () => { expect(studentList).to.have.lengthOf(1); });
+    it(`should only contain ${student1Last}`, () => { 
+      expect(studentList[0]).to.have.property("last", student1Last);
     });
   });
 });

@@ -1,27 +1,24 @@
 // BSD LICENSE - c John Nunley and Larson Rivera
 
+import { ChangeAttendance } from "./attendance-common";
 import { ErrorMap, processErrors } from "./error";
 import { Nullable } from "./utils";
 import { sendPostData } from "./post";
 
 /* Error Numbers
   1 - Incorrectly set events
-  2 - Internal Error
+  2 - Invalid session
+  4 - Internal Error
 */
 
 const errMap: ErrorMap = {
   1: "Unable to set another student's events.",
-  2: "An internal error occurred, please consult the site administrators."
+  2: "Your session has expired. Please try logging in again.",
+  4: "An internal error occurred, please consult the site administrators."
 };
 
 interface StudentForm {
   selectedEvents: Array<HTMLInputElement>;
-};
-
-interface ChangeAttendance {
-  studentId: number;
-  eventId: number;
-  attendance: boolean;
 };
 
 // contains which changes we have to make
@@ -72,7 +69,7 @@ function submitAttendance() {
   sendPostData("/process-attendance", postData);
 }
 
-export default function onDiagramFound() {
+export function foundDiagram() {
   for (const row of Array.from(document.getElementsByTagName("tr"))) {
     if (row.getElementsByTagName("form").length !== 0) {
       addTriggerToRow(row);

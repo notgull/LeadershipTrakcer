@@ -5,6 +5,7 @@ import * as nunjucks from "nunjucks";
 
 import { Attendance, AttendanceList } from "./../attendance";
 import { EventRecord } from "./../eventRecord";
+import { Nullable } from "./../utils";
 import { Student } from "./../student";
 
 nunjucks.configure({ autoescape: false });
@@ -19,7 +20,7 @@ const tableHeader =
          <th>Name</th>
          {{ event_names }}
          <th>Leadership Points</th>
-       </tr>`; // TODO: events and such
+       </tr>`; 
 const eventName = "<th>{{ event_name }}</th>";
 const tableBody = 
     `  <tr>
@@ -31,7 +32,7 @@ const tableBody =
        </tr>`;
 const eventBody = 
   `<td>
-     <input type="checkbox" class="event-checkbox={{eventId}} {{ disabled }}" name="event-checkbox-{{eventId}}" {{checked}} />
+     <input type="checkbox" class="event-checkbox={{eventId}}" {{ disabled }} name="event-checkbox-{{eventId}}" {{checked}} />
    </td>`;
 const tableEnd = 
     `</table>
@@ -41,7 +42,7 @@ const tableEnd =
 export default async function getDiagramHTML(
   page: number, 
   eventPage: number, 
-  accessStudentId: Nullable<number> | string
+  accessStudentId: Array<number> | string
 ): Promise<string> {
   // sew it all together
   let parts = [];
@@ -79,7 +80,6 @@ export default async function getDiagramHTML(
     for (let i = 0; i < events.length; i++) {
       eventId = events[i].eventId;
       attendanceList = eventAttendance[i];
-      console.log(attendanceList);
 
       // student id is key in the event list
       checkboxes.push(nunjucks.renderString(eventBody, {
@@ -89,7 +89,7 @@ export default async function getDiagramHTML(
           else return "";
         })(),
         disabled: (function() {
-          if (accessStudentId === "admin" || accessStudentId === studentId) return "";
+          if (accessStudentId === "admin" || (<number[]>accessStudentId).indexOf(studentId) !== -1) return "";
           else return "disabled";
         })()
       })); 

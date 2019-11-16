@@ -61,7 +61,7 @@ export class Student  {
   // instantiate a student from a row-like object
   static fromRow(row: any): Student {
     const s = new Student(row.first, row.last, <Belt>row.belt, row.rp);
-    s.userId = row.userid;
+    s.userId = parseInt(row.userid, 10);
     s.studentId = row.studentid;
     return s;
   }
@@ -71,6 +71,18 @@ export class Student  {
     let res = await query("SELECT * FROM Students WHERE studentId=$1;", [studentId]);
     if (res.rowCount === 0) return null;
     return Student.fromRow(res.rows[0]);
+  }
+
+  // load a student by which users own it
+  static async loadByUser(userId: number): Promise<Array<Student>> {
+    const res = await query("SELECT * FROM Students WHERE userId=$1;", [userId]);
+    let array = [];
+
+    for (const row of res.rows) {
+      array.push(Student.fromRow(row));
+    }
+
+    return array;
   }
 
   // load all students
