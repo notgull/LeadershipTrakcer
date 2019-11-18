@@ -1,5 +1,5 @@
 // BSD LICENSE - c John Nunley and Larson Rivera
-import * as jquery from "jquery";
+import * as $ from "jquery";
 
 import { ChangeAttendance } from "./attendance-common";
 import { ErrorMap, processErrors } from "./error";
@@ -25,21 +25,21 @@ interface StudentForm {
 // contains which changes we have to make
 let attendanceChanges: Array<ChangeAttendance> = [];
 
-const submitButton = $("#submit");
+let submitButton: JQuery;
 
 // add triggers to a row of checkboxes
-function addTriggerToRow(row: jQuery) {
-  let form: HTMLFormElement = row.getElementsByTagName("form")[0];
-
+function addTriggerToRow(row: JQuery) {
   let form = row.find("form")[0];
-  let checkboxes = $(form).find("input");
+  let checkboxes = row.find(":input");
 
-  let studentId = parseInt(form.id().split("-")[2], 10);
-  checkboxes.each((checkbox: HTMLInputElement) => {
+  let studentId = parseInt(form.id.split("-")[2], 10);
+  checkboxes.each(function(this: HTMLElement) {
+    const checkbox = <HTMLInputElement>this;
     if (checkbox && !checkbox.disabled) {
+      console.log(checkbox.classList[0]);
       let eventId = parseInt(checkbox.classList[0].split("-")[2], 10);
 
-      checkbox.onclick = (function(sid: number, eid: number, cbox: HTMLInputElement) {
+      $(checkbox).click((function(sid: number, eid: number, cbox: HTMLInputElement) {
         return function() {
           // loop through and determine which to edit
           for (let i = 0; i < attendanceChanges.length; i++) {
@@ -57,7 +57,7 @@ function addTriggerToRow(row: jQuery) {
 
           submitButton.removeClass("vanished");
         };
-      })(studentId, eventId, checkbox);
+      })(studentId, eventId, checkbox));
     }
   });
 }
@@ -73,13 +73,16 @@ function submitAttendance() {
 export function foundDiagram() {
   console.log("Running diagram code"); 
 
-  for (const row of Array.from(document.getElementsByTagName("tr"))) {
-    if (row.getElementsByTagName("form").length !== 0) {
-      addTriggerToRow(row);
-    }
-  }
+  submitButton = $("#submit");
+  
+  processErrors(errMap);
 
-  if (submitButton) {
-    submitButton.onclick = submitAttendance;
-  }
+  $("tr").each(function(this: HTMLElement) {
+    const row = $(this);
+    if (row.find("form").length > 0) {
+      addTriggerToRow(row);
+    } 
+  }); 
+
+  submitButton.click(submitAttendance); 
 }

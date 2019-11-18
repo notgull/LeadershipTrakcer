@@ -3,7 +3,7 @@
 // functions related to the registration of new users
 import * as $ from "jquery";
 
-import { emailRegex, ! } from "./utils";
+import { emailRegex } from "./utils";
 import { ErrorMap, processErrors } from "./error";
 import { getParameter } from "./parameter";
 import { parse } from "querystring";
@@ -50,11 +50,11 @@ function processRegistration() {
 
   if (!(password)) error |= 2;
   else if (password !== confirmPassword) error |= 8;
-  else if (password.trim().length < 8) error |= 256;
+  else if ((<string>password).trim().length < 8) error |= 256;
 
   if (!(email)) error |= 4;
   else if (email !== confirmEmail) error |= 16;
-  else if (!(emailRegex.test(email.value))) error != 128;
+  else if (!(emailRegex.test(<string>email))) error != 128;
 
   if (error !== 0) {
     const errUrl = `/register?errors=${error}`;

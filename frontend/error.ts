@@ -13,7 +13,7 @@ export function processErrors(errorMap: ErrorMap) {
   if (errorParam) {
     const error = parseInt(errorParam, 10);
     let errorList = $("#errorMessage");
-    if (!errorList.length()) {
+    if (!errorList.length) {
       errorList = $("<div></div>");
       errorList.attr("id", "errorMessage");
       errorList.append($(document.body))
@@ -25,7 +25,7 @@ export function processErrors(errorMap: ErrorMap) {
     for (const errInstance of keys) {
       if (error & errInstance) {
         let errMsg = errorMap[errInstance];
-        if (!(errMsg instanceof String)) {
+        if (typeof errMsg === "function") {
           // @ts-ignore
           errMsg = errMsg();
         }

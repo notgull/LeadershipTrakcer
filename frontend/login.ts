@@ -35,5 +35,6 @@ function processLogin() {
 export function foundLogin() {
   processErrors(errMap);
   
+  console.log("Found login setup");
   $("#submit").click(processLogin);
 }

@@ -43,7 +43,7 @@ function processNewStudent() {
   if (!(lastname)) error |= 8;
 
   if (!(beltrank)) error |= 16;
-  else if (!parseBelt(beltrank)) error |= 2;
+  else if (!parseBelt(<string>beltrank)) error |= 2;
   
   if (error !== 0) {
     let errUrl = `/new-student?errors=${error}`;
@@ -72,9 +72,9 @@ function addBeltrankTeller() {
   const beltInput = $("#beltrank");
   const teller = $("#beltrankteller");
 
-  if (beltInput.length() && teller.length()) {
+  if (beltInput.length && teller.length) {
     const tellBeltRank = function() {
-      const rank = parseBelt(beltInput.val());
+      const rank = parseBelt(<string>beltInput.val());
       if (rank) {
         teller.html(`You have input belt rank "${rank}"`);
       } else {
@@ -96,7 +96,7 @@ function addBeltrankTeller() {
 
 // function to run if createstudent element is found
 export function foundCreatestudent() {
-  if (getCookie("sessionId").length === 0 || !($("#loginlink").length())) {
+  if (getCookie("sessionId").length === 0 || !($("#loginlink").length)) {
     $("#createstudent").html("You must be logged in in order to create a new student");
     return;
   }

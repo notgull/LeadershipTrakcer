@@ -16,29 +16,29 @@ $(document).ready(() => {
   console.log("Executing onload");
 
   // if the register element is found, add triggers to it
-  if ($("register").length()) {
+  if ($("#register").length) {
     foundRegister();
   }
 
   // if the login element is found, add triggers to it
-  if ($("login").length()) {
+  if ($("#login").length) {
     foundLogin();
   }
 
   // if the createstudent element is found, add triggers to it
-  if ($("createstudent").length()) {
+  if ($("#createstudent").length) {
     foundCreatestudent();
   }
   
-  if ($("createEvent").length()) {
+  if ($("#createEvent").length) {
     foundCreateevent();
   }
 
-  if ($("change-rp").length()) {
+  if ($("#change-rp").length) {
     foundChangeRp();
   }
 
-  if ($("diagram-table").length()) {
+  if ($("#diagram-table").length) {
     foundDiagram();
   }
 });

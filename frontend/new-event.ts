@@ -8,7 +8,6 @@ import { parse } from "querystring";
 import { sendPostData } from "./post";
 
 import * as $ from "jquery";
-import * as dateformat from "dateformat";
 
 /* New Event Errors (2^x)
  1 - Event wih Current Details exists
@@ -36,17 +35,14 @@ function processNewEvent() {
   const data = $("#eventform").serialize();
   const {eventName, eventDate, eventPoints, eventDescription} = parse(data);
 
-  let date: string | Date = eventDate;
-  if (typeof date !== "string") {
-    date = dateformat(date, "mm/dd/yyyy"); 
-  }
-
+  let date: Date = new Date(<string>eventDate);
+ 
   let error = 0;
   if (!(eventName)) error |= 2;
   if (!(eventDate)) error |= 4;
-  if (!(eventDate)) error |= 8;
+  if (!(eventPoints)) error |= 8;
 
-  if (!(/\d\d\/\d\d\/\d\d(\d\d)?/.test(date))) error |= 1;
+  //if (!(/\d\d\/\d\d\/\d\d(\d\d)?/.test(date))) error |= 1;
 
   if (error !== 0) {
     let errUrl = `/new-event?errors=${error}`;
@@ -57,7 +53,7 @@ function processNewEvent() {
 
     const params = {
       eventName,
-      eventDate,
+      date,
       eventPoints,
       eventDescription
     };

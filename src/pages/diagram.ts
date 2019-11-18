@@ -15,7 +15,8 @@ const limit = 30;
 const numEvents = 8;
 
 const tableHeader =
-    `<table border="1" id="diagram-table">
+    `<div id="errorMessage"></div>
+     <table border="1" id="diagram-table">
        <tr>
          <th>Name</th>
          {{ event_names }}
@@ -32,7 +33,7 @@ const tableBody =
        </tr>`;
 const eventBody = 
   `<td>
-     <input type="checkbox" class="event-checkbox={{eventId}}" {{ disabled }} name="event-checkbox-{{eventId}}" {{checked}} />
+     <input type="checkbox" class="event-checkbox-{{eventId}}" {{ disabled }} name="event-checkbox-{{eventId}}" {{checked}} />
    </td>`;
 const tableEnd = 
     `</table>
@@ -117,5 +118,6 @@ export default async function getDiagramHTML(
   await Promise.all(promises);
 
   parts.push(tableEnd);
-  return parts.join("\n");
+  const endResult = parts.join("\n");
+  return endResult;
 }
