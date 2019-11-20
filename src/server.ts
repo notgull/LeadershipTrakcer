@@ -335,11 +335,15 @@ export async function getServer(): Promise<express.Application> {
         res.redirect("/?errors=2");
       }
 
+      console.log(`User key is ${JSON.stringify(key)}`);
+
       // check to see if their operation is valid
-      let attendanceChanges: Array<ChangeAttendance> = req.body.attendance;
+      let attendanceChanges: Array<ChangeAttendance> = JSON.parse(req.body.attendance);
       if (key !== "admin") {
         for (const change of attendanceChanges) {
+          console.log(change);
           if ((<number[]>key).indexOf(change.studentId) === -1) {
+            console.log(`Change ${change.studentId} not found in key`);
             res.redirect("/?errors=1");
             return;
           }
@@ -350,6 +354,8 @@ export async function getServer(): Promise<express.Application> {
       for (const change of attendanceChanges) {
         await Attendance.setAttendance(change.studentId, change.eventId, change.attendance);
       }
+
+      res.redirect("/?errors=8");
     } catch (err) {
       res.redirect("/?errors=4");
       console.error(err);

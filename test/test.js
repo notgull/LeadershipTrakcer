@@ -272,6 +272,25 @@ describe("Testing event and attendance record", () => {
     expect(list[student2.studentId]).to.equal(false);
   });
 
+  describe("Test setAttendance integrity", () => {
+    function setEventTo(val) {
+      it("should proceed without errors", async () => {
+        await Attendance.setAttendance(student1.studentId, event1.eventId, val);
+      });
+
+      describe("The corresponding event record in the database should match", () => {
+        let attRecord;
+
+        it("should be false", async() => {
+          expect(await Attendance.getAttendance(student1.studentId, event1.eventId)).to.equal(val);
+        });
+      });
+    }
+
+    describe("Setting attendance record to false", () => { setEventTo(false); });
+    describe("Setting attendance record to true", () => { setEventTo(true); });
+  });
+
   describe("Testing total number of points", () => {
     let expectedUser1Pts;
     let expectedUser2Pts;   

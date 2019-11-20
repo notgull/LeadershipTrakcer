@@ -23,9 +23,9 @@ export class Attendance {
                           [studentId, eventId]);
     if (res.rowCount === 0) {
       // we must insert the row in
-      await query("INSERT INTO Attendance VALUES ($1, $2, $3);", [studentId, eventId, attended]);
+      await query("INSERT INTO Attendance (studentId, eventId, attended) VALUES ($1, $2, $3);", [studentId, eventId, attended]);
     } else {
-      await query("UPDATE Attendance SET attended=$1 WHERE studentId=$1 AND eventId=$2;", [studentId, eventId]);
+      await query("UPDATE Attendance SET attended=$1 WHERE studentId=$2 AND eventId=$3;", [attended, studentId, eventId]);
     }
   }
 

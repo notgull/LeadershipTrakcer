@@ -62,7 +62,7 @@ export class Student  {
   static fromRow(row: any): Student {
     const s = new Student(row.first, row.last, <Belt>row.belt, row.rp);
     s.userId = parseInt(row.userid, 10);
-    s.studentId = row.studentid;
+    s.studentId = parseInt(row.studentid, 10);
     return s;
   }
 
@@ -103,7 +103,7 @@ export class Student  {
       let res = await query(`INSERT INTO Students (first,last,belt,rp,userId)
                              VALUES ($1, $2, $3, $4, $5) RETURNING studentid;`,
                             [this.first, this.last, this.belt, this.rp, this.userId]);
-      this.studentId = res.rows[0].studentid;
+      this.studentId = parseInt(res.rows[0].studentid, 10);
     } else {
       let res = await query(`UPDATE Students SET first=$1, last=$2, belt=$3, rp=$4 WHERE studentId=$5;`,
                             [this.first, this.last, this.belt, this.rp, this.studentId]);

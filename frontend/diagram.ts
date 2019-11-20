@@ -2,6 +2,7 @@
 import * as $ from "jquery";
 
 import { ChangeAttendance } from "./attendance-common";
+import { getParameter } from "./parameter";
 import { ErrorMap, processErrors } from "./error";
 import { Nullable } from "./utils";
 import { sendPostData } from "./post";
@@ -64,7 +65,7 @@ function addTriggerToRow(row: JQuery) {
 
 function submitAttendance() {
   const postData = {
-    attendance: attendanceChanges
+    attendance: JSON.stringify(attendanceChanges)
   };
   
   sendPostData("/process-attendance", postData);
@@ -75,7 +76,11 @@ export function foundDiagram() {
 
   submitButton = $("#submit");
   
-  processErrors(errMap);
+  if (getParameter("errors") === "8") {
+    $("#errorMessage").css("color", "green").html("<p>Successfully set attendance!</p>");
+  } else {
+    processErrors(errMap);
+  }
 
   $("tr").each(function(this: HTMLElement) {
     const row = $(this);

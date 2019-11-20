@@ -10,7 +10,7 @@ import { Student } from "./../student";
 
 nunjucks.configure({ autoescape: false });
 
-const limit = 30;
+const limit = 50;
 
 const numEvents = 8;
 
@@ -38,7 +38,7 @@ const eventBody =
 const tableEnd = 
     `</table>
 
-     <form id="submit-form"><input type="button" id="submit" value="Submit" class="vanished"/></form>`;
+     <form id="submit-form"><p><input type="button" id="submit" value="Submit" class="vanished"/></p></form>`;
 
 export default async function getDiagramHTML(
   page: number, 
