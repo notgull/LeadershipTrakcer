@@ -1,5 +1,5 @@
 /*
- * src/promises.ts
+ * src/excel.ts
  * LeadershipTrakcer - Martial arts attendance logger
  *
  * Copyright (c) 2019, John Nunley and Larson Rivera
@@ -31,8 +31,31 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import { exists as existsCB, readFile as readFileCB } from "fs";
-import { promisify } from "util";
+// read in information from an excel spreadsheet into the database
+import * as excel from "exceljs";
 
-export const exists = promisify(existsCB);
-export const readFile = promisify(readFileCB);
+import { exists } from "./promises";
+import { query } from "./sql";
+
+export async function readSpreadsheet(filename: string): Promise<void> {
+  if (!(await exists(filename))) {
+    console.log(`File ${filename} does not exist`);
+    return;
+  }
+
+  const workbook = new excel.Workbook();
+  try {
+    await workbook.xlsx.readFile(filename);
+  } catch (err) {
+    console.log(`Unable to read xlsx file: ${err}`);
+    return;
+  }
+
+  // run function on each worksheet
+  workbook.eachSheet((worksheet: excel.Worksheet) => {
+    // read each row of the sheet
+    worksheet.eachRow((row: excel.Row) => {
+
+    });
+  });
+}

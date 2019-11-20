@@ -3,6 +3,14 @@ node_js:
  - 10.17.0
 services:
  - postgresql
+os:
+ - linux
+ - windows
+
+matrix:
+  allowed_failures:
+   - os: windows
+  fast_finish: true
 
 cache:
  - npm
@@ -10,6 +18,11 @@ cache:
 before_script:
  - npm run gulp
  - node bin/setup_db.js | psql -U postgres
+   on:
+     os: linux
+ - PowerShell -Command "node bin/setup_db.js | sudo -u postgres psql"
+   on:
+     os: windows
  - mkdir certs
  - openssl req -x509 -newkey rsa:4096 -keyout certs/lt.key -out certs/lt.pem -nodes -subj '/CN=localhost' -days 365
  
