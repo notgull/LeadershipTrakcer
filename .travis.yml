@@ -18,11 +18,6 @@ cache:
 before_script:
  - npm run gulp
  - node bin/setup_db.js | psql -U postgres
-   on:
-     os: linux
- - PowerShell -Command "node bin/setup_db.js | sudo -u postgres psql"
-   on:
-     os: windows
  - mkdir certs
  - openssl req -x509 -newkey rsa:4096 -keyout certs/lt.key -out certs/lt.pem -nodes -subj '/CN=localhost' -days 365
  
