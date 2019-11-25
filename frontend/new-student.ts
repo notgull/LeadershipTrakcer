@@ -39,6 +39,8 @@ import { getParameter } from "./parameter";
 import { parse } from "querystring";
 import { sendPostData } from "./post";
 
+import * as $ from "jquery";
+
 /* New Student Errors (2^x)
  1 - Name combination already exists
  2 - Improper belt value

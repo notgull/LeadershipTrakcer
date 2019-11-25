@@ -2,5 +2,9 @@
   "postgres_username": "leadershiptracker",
   "postgres_password": "123GoodKicks123",
   "postgres_database": "leadershiptracker",
-  "postgres_host": "127.0.0.1"
+  "postgres_host": "127.0.0.1",
+
+  "default_excel_username": "exceluser",
+  "default_excel_password": "donotlogin",
+  "default_excel_email": "jtnunley01@gmail.com"
 }

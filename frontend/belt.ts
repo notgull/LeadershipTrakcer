@@ -62,6 +62,39 @@ export type Belt =
   | "black5"
   | "black6";
 
+const beltsByNumber: Array<Belt> = [
+  "ninjawhite",
+  "ninjawhite",
+  "ninjawhite",
+  "ninjaorange",
+  "ninjayellow",
+  "ninjagreen",
+  "ninjapurple",
+  "ninjablue",
+  "ninjabrown",
+  "ninjared",
+  "ninjablack",
+  "white",
+  "orange",
+  "yellow",
+  "green",
+  "blue",
+  "bluesr",
+  "brown",
+  "brownsr",
+  "red",
+  "redsr",
+  "candidate",
+  "black1",
+  "black2",
+  "black3",
+  "black4",
+  "black5",
+  "black6"
+];
+
+const numberRegex = /\d{2,}/;
+
 const mainRanks = [
   "white",
   "orange",
@@ -74,6 +107,10 @@ const mainRanks = [
 
 export function parseBelt(input: string): Nullable<Belt> {
   input = input.toLowerCase();
+
+  if (numberRegex.test(input)) {
+    return beltsByNumber[parseInt(numberRegex.exec(input)[0], 1)];
+  }
 
   // test for black belt
   if (input.includes("black")) {
@@ -101,7 +138,7 @@ export function parseBelt(input: string): Nullable<Belt> {
   }
 
   for (const rank of mainRanks) {
-    if (input.includes(rank)) {
+			if (input.includes(rank)) {
       mainRank = rank;
       break;
     }

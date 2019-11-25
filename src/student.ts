@@ -32,7 +32,8 @@
  */
 
 import { Belt, parseBelt } from "./belt";
-import { query } from './sql';
+import { Nullable } from "./utils";
+import { query } from "./sql";
 
 export enum SortStudentBy  {
   Name = "last ASC, first ASC",
@@ -109,6 +110,13 @@ export class Student  {
     }
 
     return array;
+  }
+
+  // load a student by first and last name
+  static async loadByFirstAndLastName(first: string, last: string): Promise<Nullable<Student>> {
+    const res = await query("SELECT * FROM Students WHERE first=$1 AND last=$2;", [first, last]);
+    if (res.rowCount === 0) return null;
+    return Student.fromRow(res.rows[0]);
   }
 
   // load all students
