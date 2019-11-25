@@ -17,7 +17,7 @@ addons:
       - postgresql-client-10
 
 matrix:
-  allowed_failures:
+  allow_failures:
    - os: windows
   fast_finish: true
 
@@ -25,6 +25,7 @@ cache:
  - npm
 
 before_script:
+ - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install postgresql; fi
  - npm run gulp
  - node bin/setup_db.js | psql -U postgres
  - mkdir certs
