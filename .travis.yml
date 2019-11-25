@@ -25,7 +25,6 @@ cache:
  - npm
 
 before_script:
- - if [ "$TRAVIS_OS_NAME" = "windows" ]; then choco install postgresql; fi
  - npm run gulp
  - node bin/setup_db.js | psql -U postgres
  - mkdir certs
