@@ -74,7 +74,10 @@ export async function readSpreadsheet(filename: string): Promise<void> {
   let cell, event, reResult, student;
   let promises: Array<Promise<void>> = [];
 
-  let eventColKey: { [key: Array<number>]: EventRecord } = {};
+  let eventColKey: Array<Array<EventRecord>> = new Array(workbook.worksheets.length);
+  for (let i = 0; i < workbook.worksheets.length; i++) {
+    eventColKey[i] = new Array(workbook.worksheets[i].columnCount);
+  }
 
   // run function on each worksheet
   workbook.worksheets.slice().reverse().forEach((worksheet: excel.Worksheet, index: number) => {
@@ -113,7 +116,7 @@ export async function readSpreadsheet(filename: string): Promise<void> {
       if (name && date && points && description) {
         event = new EventRecord(name, points, date, description);
         promises.push(event.submit());
-        eventColKey[ [index, colIndex] ] = event;
+        eventColKey[index][colIndex] = event;
       }
     });
   });
@@ -128,10 +131,10 @@ export async function readSpreadsheet(filename: string): Promise<void> {
       if (!nameRegex.test(<string>row.getCell(2).value)) return; // skip no-name cells
 
       // iterate over columns within the row
-      row.eachCell((cell: excel.Cell, colIndex: number) {
+      row.eachCell((cell: excel.Cell, colIndex: number) => {
         // if there's a value within the row, we assume that they were there
         if (cell.value && cell.value > 0) {
-          event = eventColKey[ [index, colIndex] ];
+          event = eventColKey[index][colIndex];
         }
       });
     }); 
