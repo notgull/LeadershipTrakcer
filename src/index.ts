@@ -37,10 +37,16 @@ import * as path from "path";
 
 import { getServer } from "./server";
 import { readFile } from "./promises";
+import { readSpreadsheet } from "./excel";
 
 // get version
 const version = require(path.join(process.cwd(), "package.json")).version;
 console.log(`LeadershipTrakcer Version ${version}`);
+
+// check for args
+if (process.argv.length > 2 && process.argv[2] === "--excel") {
+  readSpreadsheet(process.argv[3]).then(() => { process.exit();});
+}
 
 // run a handful of async tasks at once
 (async () => {

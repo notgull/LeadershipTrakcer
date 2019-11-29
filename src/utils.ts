@@ -32,7 +32,6 @@
  */
 
 // utilities used by both frontend and backend
-
 export async function timeout(ms: number): Promise<void> {
   return new Promise((resolve: any, reject: any) => {
     setTimeout(function() { resolve(); }, ms);

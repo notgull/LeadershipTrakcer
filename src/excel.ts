@@ -35,6 +35,7 @@
 import * as excel from "exceljs";
 import * as path from "path";
 
+import { Attendance } from "./attendance";
 import { Belt, parseBelt } from "./belt";
 import { EventRecord } from "./eventRecord";
 import { exists } from "./promises";
@@ -43,7 +44,9 @@ import { Student } from "./student";
 import { User } from "./users";
 
 const config = require(path.join(process.cwd(), "config.json"));
-const nameRegex = /(\w+), (\w+)[^ ]/;
+const nameRegex = /(\w+), (\w+)/;
+
+const timeout = async(ms: number) => new Promise((resolve: any) => setTimeout(resolve, ms));
 
 export async function readSpreadsheet(filename: string): Promise<void> {
   if (!(await exists(filename))) {
@@ -59,6 +62,7 @@ export async function readSpreadsheet(filename: string): Promise<void> {
     false
   );
   const { userId } = user;
+  console.log(userId);
 
   const workbook = new excel.Workbook();
   try {
@@ -70,9 +74,14 @@ export async function readSpreadsheet(filename: string): Promise<void> {
 
   let belt: Belt;
   let first: string;
-  let last: string
-  let cell, event, reResult, student;
+  let last: string;
+  let event: EventRecord;
+  let cell, reResult, student;
   let promises: Array<Promise<void>> = [];
+  let eventPromises: Array<Promise<void>> = [];
+
+  let students: Array<Student> = [];
+  let events: Array<EventRecord> = [];
 
   let eventColKey: Array<Array<EventRecord>> = new Array(workbook.worksheets.length);
   for (let i = 0; i < workbook.worksheets.length; i++) {
@@ -87,24 +96,26 @@ export async function readSpreadsheet(filename: string): Promise<void> {
       if (!nameRegex.test(<string>cell.value)) return; // if the cell isn't a name cell, get out of here
 
       // create a student if they don't exist already 
-      [last, first] = <Array<string>>nameRegex.exec(<string>cell.value);
-      promises.push((async () => {
-        if (!(await Student.checkCombination(first, last))) {
-          belt = parseBelt(<string>row.getCell(3).value);
-          if (!belt) return;
+      [,last,first] = <Array<string>>nameRegex.exec(<string>cell.value);
+  
+      belt = parseBelt(<string>row.getCell(3).value);
+      if (!belt) { console.log("Belt not found"); return; }
 
-          student = new Student(first, last, belt, 0);
-          await student.submit();
-        }
-      })());
+      student = new Student(first, last, belt, 0);
+      student.userId = userId;
+        
+      students.push(student);   
     });
 
     // read each event of the sheet
+    // TODO: convert to use rows and then eachCell()
     let num = 0;
-    worksheet.eachColumnKey((column: Partial<excel.Column>, colIndex: number) => {
+    worksheet.eachRow((row: excel.Row, colIndex: number) => {
+      console.log(column);
       // skip first 3 columns
       if (num < 3) {
         num++;
+        console.log("Skipping...");
         return;
       }
 
@@ -113,30 +124,58 @@ export async function readSpreadsheet(filename: string): Promise<void> {
       let points = parseInt(<string>column.values[3], 10);
       let description = "Excel imported event";
 
+      console.log(`Creating event ${name} on ${date} worth ${points} points`);
       if (name && date && points && description) {
         event = new EventRecord(name, points, date, description);
-        promises.push(event.submit());
+        events.push(event);
         eventColKey[index][colIndex] = event;
       }
     });
   });
 
   // run all promises
-  await Promise.all(promises);
-  promises = [];
+  // note: this process runs better if it is synchronous
+  for (const uStudent of students) {
+    if (!(await Student.checkCombination(uStudent.first, uStudent.last))) {
+      await uStudent.submit();
+    }
+  }
+  for (const uEvent of events) {
+    await uEvent.submit();
+  }
+
+  console.log(eventColKey);
 
   // set attendance
   workbook.worksheets.slice().reverse().forEach((worksheet: excel.Worksheet, index: number) => {
     worksheet.eachRow((row: excel.Row) => {
       if (!nameRegex.test(<string>row.getCell(2).value)) return; // skip no-name cells
 
-      // iterate over columns within the row
-      row.eachCell((cell: excel.Cell, colIndex: number) => {
-        // if there's a value within the row, we assume that they were there
-        if (cell.value && cell.value > 0) {
-          event = eventColKey[index][colIndex];
-        }
-      });
+      try {
+        [,last,first] = nameRegex.exec(<string>row.getCell(2).value);
+
+        // iterate over columns within the row
+        row.eachCell((cell: excel.Cell, colIndex: number) => {
+          let cEvent = eventColKey[index][colIndex];
+          promises.push((async function(
+            first: string, 
+            last: string, 
+            cEvent: EventRecord, 
+            cell: excel.Cell
+          ) {
+            let cStudent = await Student.loadByFirstAndLastName(first, last);  
+ 
+            // if there's a value within the row, we assume that they were there
+            const wasThere: boolean = cell.value && cell.value > 0;
+            console.log(`${first} ${last} did ${wasThere ? "" : "not "} attend event ${cEvent.eventName}`);
+            await Attendance.setAttendance(cStudent.studentId, cEvent.eventId, wasThere);  
+          })(first,last, cEvent, cell));
+        });
+      } catch (err) {
+        console.error(err);       
+      }
     }); 
   }); 
+
+  await Promise.all(promises);
 }

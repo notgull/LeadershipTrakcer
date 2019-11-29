@@ -37,6 +37,8 @@ const fs = require("fs");
 const gulp = require("gulp");
 const ts = require("gulp-typescript");
 
+const { exec } = require("child_process");
+
 const tsProject = ts.createProject("tsconfig.json");
 const tsFrontend = ts.createProject("tsconfig-frontend.json");
 
@@ -70,5 +72,9 @@ gulp.task("frontend-browserify", () => {
     .bundle()
     .pipe(fs.createWriteStream("dist/bundle.js"));
 });
+
+gulp.task("test", () => (
+  exec("npm run test", {stdio: "inherit", stderr: "inherit"})
+));
 
 gulp.task("default", gulp.parallel("backend", gulp.series("frontend-ts", "frontend-browserify")));

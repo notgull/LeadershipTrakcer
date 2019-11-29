@@ -93,7 +93,7 @@ const beltsByNumber: Array<Belt> = [
   "black6"
 ];
 
-const numberRegex = /\d{2,}/;
+const numberRegex = /(\d{2,})/;
 
 const mainRanks = [
   "white",
@@ -109,7 +109,9 @@ export function parseBelt(input: string): Nullable<Belt> {
   input = input.toLowerCase();
 
   if (numberRegex.test(input)) {
-    return beltsByNumber[parseInt(numberRegex.exec(input)[0], 1)];
+    let res = input.match(numberRegex);
+    let index = parseInt(res[0], 10);
+    return beltsByNumber[index];
   }
 
   // test for black belt

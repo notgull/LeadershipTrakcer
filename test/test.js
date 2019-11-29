@@ -267,6 +267,16 @@ describe("Testing student-related functions", () => {
       expect(studentList[0]).to.have.property("last", student1Last);
     });
   });
+
+  describe("Test checkCombination function", () => {
+    it("should equal true when a valid first/last combo is put in", async () => {
+      expect(await Student.checkCombination(student1First, student1Last)).to.equal(true);
+    });
+
+    it("should equal false when an invalid combo is put in", async () => {
+      expect(await Student.checkCombination(student1First, "does_not_exist")).to.equal(false);
+    });
+  });
 });
 
 describe("Testing event and attendance record", () => {

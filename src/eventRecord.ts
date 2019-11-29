@@ -56,6 +56,8 @@ export class EventRecord {
                            VALUES ($1, $2, $3, $4) RETURNING eventid;`,
                           [this.eventName, this.pts, this.date, this.description]);
 
+    console.log(`Submitting event ${JSON.stringify(this)}`);
+
     this.eventId = res.rows[0].eventid; // Get the event id
     console.log(`Returned eventId ${this.eventId}`);
   }

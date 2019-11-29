@@ -147,7 +147,7 @@ export class Student  {
 
   // test to see if a f/l combination exists
   static async checkCombination(first: string, last: string): Promise<boolean> {
-    let res = await query("SELECT * FROM Students WHERE first=$1 and last=$2;", [first, last]);
+    let res = await query("SELECT * FROM Students WHERE first=$1 AND last=$2;", [first, last]);
     return res.rowCount > 0;
   }
 }
