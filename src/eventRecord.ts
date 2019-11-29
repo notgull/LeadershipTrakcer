@@ -51,15 +51,13 @@ export class EventRecord {
     this.eventId = -1 // Just give the id a starting point
   }
 
-  async submit(): Promise<void>{
+  async submit(): Promise<void> {
+    console.log(`Submitting event ${JSON.stringify(this)}`);
     let res = await query(`INSERT INTO Events (name, points, date, description) 
                            VALUES ($1, $2, $3, $4) RETURNING eventid;`,
-                          [this.eventName, this.pts, this.date, this.description]);
-
-    console.log(`Submitting event ${JSON.stringify(this)}`);
+                          [this.eventName, this.pts, this.date, this.description]); 
 
     this.eventId = res.rows[0].eventid; // Get the event id
-    console.log(`Returned eventId ${this.eventId}`);
   }
 
   // test to see if a f/l combination exists

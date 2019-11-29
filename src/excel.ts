@@ -86,10 +86,17 @@ export async function readSpreadsheet(filename: string): Promise<void> {
   let eventColKey: Array<Array<EventRecord>> = new Array(workbook.worksheets.length);
   for (let i = 0; i < workbook.worksheets.length; i++) {
     eventColKey[i] = new Array(workbook.worksheets[i].columnCount);
+    for (let j = 0; j < workbook.worksheets[i].columnCount; j++) {
+      eventColKey[i][j] = new EventRecord("__ignore", 0, new Date(), "Excel imported event");
+    }
   }
+
+  console.log(eventColKey[0].length);
 
   // run function on each worksheet
   workbook.worksheets.slice().reverse().forEach((worksheet: excel.Worksheet, index: number) => {
+    index = workbook.worksheets.length - (index);
+
     // read each row of the sheet
     worksheet.eachRow((row: excel.Row) => {
       cell = row.getCell(2);
@@ -108,28 +115,31 @@ export async function readSpreadsheet(filename: string): Promise<void> {
     });
 
     // read each event of the sheet
-    // TODO: convert to use rows and then eachCell()
-    let num = 0;
-    worksheet.eachRow((row: excel.Row, colIndex: number) => {
-      console.log(column);
-      // skip first 3 columns
-      if (num < 3) {
-        num++;
-        console.log("Skipping...");
-        return;
-      }
+    worksheet.getSheetValues().slice(1, 4).forEach((row: excel.Row, rIndex: number) => {
+      let num = 0;
+      let cIndex = 0;
 
-      let name = <string>column.values[1];
-      let date = new Date(Date.parse(<string>column.values[2]));
-      let points = parseInt(<string>column.values[3], 10);
-      let description = "Excel imported event";
+      // @ts-ignore
+      row.forEach((value: string) => {
+        console.log(cIndex);
 
-      console.log(`Creating event ${name} on ${date} worth ${points} points`);
-      if (name && date && points && description) {
-        event = new EventRecord(name, points, date, description);
-        events.push(event);
-        eventColKey[index][colIndex] = event;
-      }
+        if (num < 3) {
+          num++;
+          return;
+        }
+
+        const wIndex = index - 1;
+
+        if (rIndex === 0) {
+          eventColKey[wIndex][cIndex].eventName = value;
+        } else if (rIndex === 1) {
+          eventColKey[wIndex][cIndex].date = new Date(/*Date.parse(value)*/);
+        } else if (rIndex === 2) {
+          eventColKey[wIndex][cIndex].pts = parseInt(value, 10) || 0;
+        }
+
+        cIndex++;
+      });
     });
   });
 
@@ -140,8 +150,13 @@ export async function readSpreadsheet(filename: string): Promise<void> {
       await uStudent.submit();
     }
   }
-  for (const uEvent of events) {
-    await uEvent.submit();
+
+  for (const eventRow of eventColKey) {
+    for (const uEvent of eventRow) {
+      if (uEvent.eventName !== "__ignore") {
+        await uEvent.submit();
+      }
+    }
   }
 
   console.log(eventColKey);
