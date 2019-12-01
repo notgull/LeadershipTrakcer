@@ -290,7 +290,7 @@ describe("Testing event and attendance record", () => {
     it("#eventId", () => { expect(testEvent).to.have.property("eventId", event1.eventId); });
     it("#eventName", () => { expect(testEvent).to.have.property("eventName", event1.eventName); });
     it("#pts", () => { expect(testEvent).to.have.property("pts", event1.pts); });
-    it("#date", () => { expect(testEvent.date.toISOString()).to.equal(event1.date.toISOString()); });
+    it("#date", () => { expect(testEvent.date).to.equal(event1.date); });
     it("#description", () => { expect(testEvent).to.have.property("description", event1.description); });
   });
 

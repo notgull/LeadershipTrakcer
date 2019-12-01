@@ -45,3 +45,13 @@ $ npm run server
 ```
 
 On Windows, the same command can most likely be run within Powershell.
+
+## Stuff to do:
+
+- Crowns
+- User id change
+- Mobile support
+- Link navigation
+- Buttons for multi-page
+- Cool background (ask Mrs. Denice)
+- Testing!!!!
