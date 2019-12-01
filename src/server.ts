@@ -304,41 +304,46 @@ export async function getServer(): Promise<express.Application> {
 
   //New events
   app.get("/new-event", async function(req: express.Request, res: express.Response) {
-    const newEventPage = await readFile("html/createEvent.html");
-    res.send(render(newEventPage.toString(), getUsername(req)));
+    if (adminLock(req, res)) {
+      const newEventPage = await readFile("html/createEvent.html");
+      res.send(render(newEventPage.toString(), getUsername(req)));
+    }
   });
 
   app.post("/process-new-event", async function(req: express.Request, res: express.Response) {
-    const {eventName, pts, date, description} = req.body;
+    if (adminLock(req, res)) {
+      const {eventName, pts, date, description} = req.body;
+      console.log(date);
 
-    try {
-      let error = 0;
-      if (eventName.trim().length === 0) error |= 4;
-      if (date.trim().length === 0) error |= 8;
-      if (pts.trim().length === 0) error |= 16;
-      if (description.trim().length === 0) error |= 32;
+      try {
+        let error = 0;
+        if (eventName.trim().length === 0) error |= 4;
+        if (date.trim().length === 0) error |= 8;
+        if (pts.trim().length === 0) error |= 16;
+        if (description.trim().length === 0) error |= 32;
 
-      // check the session
-      const username = getUsername(req);
-      if (!username) {
-        error |= 32;
+        // check the session
+        const username = getUsername(req);
+        if (!username) {
+          error |= 32;
+        }
+
+        // check for name/date combination
+        if (error === 0) {
+          if (await EventRecord.checkCombination(eventName, date)) error |= 1;
+        }
+
+        if (error) {
+          let errUrl = `/new-event?errors=${error}`;
+          res.redirect(errUrl);
+          return;
+        }
+
+        res.redirect("/");
+      } catch (e) {
+        console.error(e);
+        res.redirect("/new-event?errors=128");
       }
-
-      // check for name/date combination
-      if (error === 0) {
-        if (await EventRecord.checkCombination(eventName, date)) error |= 1;
-      }
-
-      if (error) {
-        let errUrl = `/new-event?errors=${error}`;
-        res.redirect(errUrl);
-        return;
-      }
-
-      res.redirect("/");
-    } catch (e) {
-      console.error(e);
-      res.redirect("/new-event?errors=128");
     }
   });
 
