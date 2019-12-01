@@ -37,14 +37,14 @@ import { query } from "./sql"
 export class EventRecord {
   eventName: string;
   pts: number;
-  date: Date;
+  date: string;
   description: string;
   eventId: number;
 
   constructor(n: string, p: number, d: Date, des: string) { // Constructor to create a named event with the number of points it needs to add
     this.eventName = n;
     this.pts = p;
-    this.date = d;
+    this.date = (d.toISOString().split("T"))[0]; //elimate timezone
     this.description = des;
 
     //SQL instantiate
