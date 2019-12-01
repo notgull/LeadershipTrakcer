@@ -313,7 +313,6 @@ export async function getServer(): Promise<express.Application> {
   app.post("/process-new-event", async function(req: express.Request, res: express.Response) {
     if (adminLock(req, res)) {
       const {eventName, pts, date, description} = req.body;
-      console.log(date);
 
       try {
         let error = 0;
@@ -328,9 +327,11 @@ export async function getServer(): Promise<express.Application> {
           error |= 32;
         }
 
+        const event = new EventRecord(eventName, pts, new Date(date), description);
+
         // check for name/date combination
         if (error === 0) {
-          if (await EventRecord.checkCombination(eventName, date)) error |= 1;
+          if (await EventRecord.checkCombination(eventName, event.date)) error |= 1;
         }
 
         if (error) {
@@ -338,6 +339,8 @@ export async function getServer(): Promise<express.Application> {
           res.redirect(errUrl);
           return;
         }
+
+        await event.submit();
 
         res.redirect("/");
       } catch (e) {

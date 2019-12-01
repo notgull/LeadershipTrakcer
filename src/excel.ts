@@ -133,7 +133,7 @@ export async function readSpreadsheet(filename: string): Promise<void> {
         if (rIndex === 0) {
           eventColKey[wIndex][cIndex].eventName = value;
         } else if (rIndex === 1) {
-          eventColKey[wIndex][cIndex].date = new Date(/*Date.parse(value)*/);
+          eventColKey[wIndex][cIndex].date = (new Date().toISOString().split("T")[0]);
         } else if (rIndex === 2) {
           eventColKey[wIndex][cIndex].pts = parseInt(value, 10) || 0;
         }
