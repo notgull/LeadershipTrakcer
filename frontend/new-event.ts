@@ -67,7 +67,7 @@ function processNewEvent() {
   const {eventName, eventDate, eventPoints, eventDescription} = parse(data);
 
   let date: Date = new Date(<string>eventDate);
- 
+
   let error = 0;
   if (!(eventName)) error |= 2;
   if (!(eventDate)) error |= 4;
@@ -98,6 +98,13 @@ const stopInterval = 100;
 
 // add an event to make this work better
 
-export function foundCreateevent() {
+export function foundCreateEvent() {
+  if (getCookie("sessionId").length === 0 || !($("#loginlink").length)) {
+    $("#createEvent").html("You must be logged in in order to create a new event");
+    return;
+  }
+
   processErrors(errMap);
+
+  $("#submit").click(processNewEvent);
 }

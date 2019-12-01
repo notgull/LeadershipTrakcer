@@ -35,7 +35,7 @@
 import * as $ from "jquery";
 
 import { foundChangeRp } from "./change-rp";
-import { foundCreateevent } from "./new-event";
+import { foundCreateEvent } from "./new-event";
 import { foundCreatestudent } from "./new-student";
 import { foundDiagram } from "./diagram";
 import { foundLogin } from "./login";
@@ -60,9 +60,9 @@ $(document).ready(() => {
   if ($("#createstudent").length) {
     foundCreatestudent();
   }
-  
+
   if ($("#createEvent").length) {
-    foundCreateevent();
+    foundCreateEvent();
   }
 
   if ($("#change-rp").length) {
