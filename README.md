@@ -55,4 +55,4 @@ On Windows, the same command can most likely be run within Powershell.
 - Buttons for multi-page
 - Cool background (ask Mrs. Denice)
 - Testing!!!!
-- Remove watermark at top
+- Delete student

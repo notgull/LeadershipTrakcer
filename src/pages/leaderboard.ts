@@ -79,5 +79,6 @@ export default async function getLeaderboardHTML(page: number): Promise<string> 
 
   await Promise.all(promises);
 
+  parts.push(tableEnd);
   return parts.join("\n");
 }

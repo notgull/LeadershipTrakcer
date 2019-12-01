@@ -411,7 +411,8 @@ export async function getServer(): Promise<express.Application> {
   // leaderboard
   app.get("/leaderboard", async function(req: express.Request, res: express.Response) {
     const page = req.query.page || 0;
-    res.send(render(await getLeaderboard(page), getUsername(req)));
+    const html = render(await getLeaderboard(page), getUsername(req));
+    res.send(html);
   });
  
   // main page
