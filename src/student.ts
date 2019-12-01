@@ -94,7 +94,7 @@ export class Student  {
   }
 
   // load a student by its student id from the sql
-  static async loadById(studentId: number): Promise<Student | null> {
+  static async loadById(studentId: number): Promise<Nullable<Student>> {
     let res = await query("SELECT * FROM Students WHERE studentId=$1;", [studentId]);
     if (res.rowCount === 0) return null;
     return Student.fromRow(res.rows[0]);
@@ -120,9 +120,16 @@ export class Student  {
   }
 
   // load all students
-  static async loadAll(page: number, limit: number, sortBy: SortStudentBy = SortStudentBy.Name): Promise<Array<Student>> {
+  static async loadAll(page: number, limit: number, sortByName: boolean = true): Promise<Array<Student>> {
+    let sortBy;
+    if (sortByName) {
+      sortBy = "last ASC, first ASC";
+    } else {
+      sortBy = "getUserPoints(studentId) DESC";
+    }
+
     const offset = page * limit;
-    let res = await query("SELECT * FROM Students ORDER BY $3 OFFSET $1 LIMIT $2;", [offset, limit, sortBy]);
+    let res = await query(`SELECT * FROM Students ORDER BY ${sortBy} OFFSET $1 LIMIT $2;`, [offset, limit]);
     if (res.rowCount === 0) return [];
     else {
       return res.rows.map((row: any) => {

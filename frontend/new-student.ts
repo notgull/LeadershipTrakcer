@@ -129,7 +129,9 @@ function addBeltrankTeller() {
 
 // function to run if createstudent element is found
 export function foundCreatestudent() {
-  if (getCookie("sessionId").length === 0 || !($("#loginlink").length)) {
+  console.log(getCookie("sessionId"));
+  console.log($("#loginlink").length);
+  if (getCookie("sessionId").length === 0 || ($("#loginlink").length)) {
     $("#createstudent").html("You must be logged in in order to create a new student");
     return;
   }

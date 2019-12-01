@@ -13,6 +13,7 @@ async function removeAll() {
   const query = `
     DROP TABLE Users CASCADE; DROP TABLE Students CASCADE;
     DROP TABLE Events CASCADE; DROP TABLE Attendance CASCADE;
+    DROP FUNCTION getUserPoints;
   `;
 
   await sql.query(query, []);

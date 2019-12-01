@@ -62,7 +62,7 @@ export class EventRecord {
 
   // test to see if a f/l combination exists
   static async checkCombination(name: string, date: string): Promise<boolean> {
-    let res = await query("SELECT * FROM Events WHERE name=$1 and date=$3;", [name, date]);
+    let res = await query("SELECT * FROM Events WHERE name=$1 and date=$2;", [name, date]);
     return res.rowCount > 0;
   }
 

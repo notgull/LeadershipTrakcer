@@ -85,8 +85,8 @@ function processNewEvent() {
     const params = {
       eventName,
       date,
-      eventPoints,
-      eventDescription
+      pts: eventPoints,
+      description: eventDescription
     };
 
     sendPostData(url, params);
@@ -99,7 +99,7 @@ const stopInterval = 100;
 // add an event to make this work better
 
 export function foundCreateEvent() {
-  if (getCookie("sessionId").length === 0 || !($("#loginlink").length)) {
+  if (getCookie("sessionId").length === 0 || $("#loginlink").length) {
     $("#createEvent").html("You must be logged in in order to create a new event");
     return;
   }

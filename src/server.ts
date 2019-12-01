@@ -195,54 +195,58 @@ export async function getServer(): Promise<express.Application> {
 
   // get create student page
   app.get("/new-student", async function(req: express.Request, res: express.Response) {
-    const newStudentPage = await readFile("html/createstudent.html");
-    res.send(render(newStudentPage.toString(), getUsername(req)));
+    if (adminLock(req, res)) {
+      const newStudentPage = await readFile("html/createstudent.html");
+      res.send(render(newStudentPage.toString(), getUsername(req)));
+    }
   });
 
   // process the creation of a new student
   app.post("/process-new-student", async function(req: express.Request, res: express.Response) {
-    const { first, last, belt } = req.body;
+    if (adminLock(req, res)) {
+      const { first, last, belt } = req.body;
 
-    try {
-      let error = 0;
-      if (first.trim().length === 0) error |= 4;
-      if (first.trim().length === 0) error |= 8;
+      try {
+        let error = 0;
+        if (first.trim().length === 0) error |= 4;
+        if (first.trim().length === 0) error |= 8;
 
-      if (belt.trim().length === 0) error |= 16;
-      else if (!parseBelt(belt)) {
-        error |= 2;
-      }
+        if (belt.trim().length === 0) error |= 16;
+        else if (!parseBelt(belt)) {
+          error |= 2;
+        }
 
-      // check the session
-      const username = getUsername(req);
-      if (!username) {
-        error |= 32;
-      }
+        // check the session
+        const username = getUsername(req);
+        if (!username) {
+          error |= 32;
+        }
 
-      // check for first/last combination
-      if (error === 0) {
-        if (await Student.checkCombination(first, last)) error |= 1;
-      }
+        // check for first/last combination
+        if (error === 0) {
+          if (await Student.checkCombination(first, last)) error |= 1;
+        }
 
-      if (error) {
-        let errUrl = `/new-student?errors=${error}`;
-        if (error & 2) errUrl += `&belt=${belt}`;
-        res.redirect(errUrl);
+        if (error) {
+          let errUrl = `/new-student?errors=${error}`;
+          if (error & 2) errUrl += `&belt=${belt}`;
+          res.redirect(errUrl);
+          return;
+        }
+
+        // create a new student
+        let student = new Student(first, last, parseBelt(belt), 0);
+        let user = await User.loadByUsername(username);
+
+        student.userId = user.userId;
+        await student.submit();
+
+        res.redirect("/");
+      } catch (e) {
+        console.error(e);
+        res.redirect("/new-student?errors=64");
         return;
       }
-
-      // create a new student
-      let student = new Student(first, last, parseBelt(belt), 0);
-      let user = await User.loadByUsername(username);
-
-      student.userId = user.userId;
-      await student.submit();
-
-      res.redirect("/");
-    } catch (e) {
-      console.error(e);
-      res.redirect("/new-student?errors=64");
-      return;
     }
   });
 
@@ -330,8 +334,11 @@ export async function getServer(): Promise<express.Application> {
         res.redirect(errUrl);
         return;
       }
+
+      res.redirect("/");
     } catch (e) {
-      res.redirect("/event?errors=64");
+      console.error(e);
+      res.redirect("/new-event?errors=128");
     }
   });
 
@@ -421,7 +428,7 @@ export async function getServer(): Promise<express.Application> {
 
     const page = req.query.page || 0;
     const eventPage = req.query.eventpage || 0;
-	  res.send(render(await getDiagram(page, eventPage, key), getUsername(req)));
+    res.send(render(await getDiagram(page, eventPage, key), getUsername(req)));
   });
 
   return app;

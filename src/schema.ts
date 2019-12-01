@@ -60,7 +60,7 @@ export async function initializeSchema(): Promise<void> {
                                 eventId INTEGER REFERENCES Events(eventId),
                                 attended BOOLEAN NOT NULL);`;
   const userPointsFunctionSql = 
-    `CREATE OR REPLACE FUNCTION getUserPoints(sid INTEGER)
+    `CREATE OR REPLACE FUNCTION getUserPoints(sid BIGINT)
        RETURNS INTEGER AS $$
        declare
          total INTEGER;
@@ -72,7 +72,7 @@ export async function initializeSchema(): Promise<void> {
          INNER JOIN Students ON Students.studentId=Attendance.studentId
          WHERE Students.studentId = sid AND Attendance.attended;
          SELECT Students.rp INTO rpval FROM Students WHERE Students.studentId = sid LIMIT 1;
-         RETURN total + rpval;
+         RETURN COALESCE(total + rpval, 0);
        END; $$
        LANGUAGE PLPGSQL;`;
 

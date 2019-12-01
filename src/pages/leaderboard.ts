@@ -35,7 +35,7 @@
 import * as nunjucks from "nunjucks";
 
 import { Attendance } from "./../attendance";
-import { Student, SortStudentBy } from "./../student";
+import { Student } from "./../student";
 
 const limit = 50;
 
@@ -69,7 +69,7 @@ export default async function getLeaderboardHTML(page: number): Promise<string> 
   }
 
   let promises = [];
-  let students = await Student.loadAll(page, limit, SortStudentBy.Points);
+  let students = await Student.loadAll(page, limit, false);
   
   if (students.length === 0) return "<p>No students yet...</p>";
 
