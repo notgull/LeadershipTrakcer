@@ -74,6 +74,7 @@ const tableEnd =
 export default async function getDiagramHTML(
   page: number, 
   eventPage: number, 
+  eventsPerPage: number,
   accessStudentId: Array<number> | string
 ): Promise<string> {
   // sew it all together
@@ -84,7 +85,7 @@ export default async function getDiagramHTML(
   // load both the most recent students and most recent events
   let results = await Promise.all([
     Student.loadAll(page, limit),
-    EventRecord.loadAll(eventPage, numEvents)
+    EventRecord.loadAll(eventPage, eventsPerPage)
   ]);
   const students = results[0];
   const events = results[1];

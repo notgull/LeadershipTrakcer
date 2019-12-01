@@ -50,7 +50,7 @@ On Windows, the same command can most likely be run within Powershell.
 
 - Crowns
 - User id change
-- Mobile support
+- Mobile support (login)
 - Link navigation
 - Buttons for multi-page
 - Cool background (ask Mrs. Denice)

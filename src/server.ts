@@ -84,14 +84,12 @@ function adminLock(req: express.Request, res: express.Response): boolean {
   }
 }
 
-// duplicate login cookie if needed
-function cookieDuplicate(req: express.Request, res: express.Response): boolean {
-  if (req.cookies.sessionIdClone) {
-    res.cookie("sessionId", req.cookies.sessionIdClone, { maxAge: 8640000 });
-    res.clearCookie("sessionIdClone");
-    return true;
-  }
-  return false;
+function doRedirect(res: express.Response, uri: string, cookies: any = {}) {
+  let result = {
+    redirect: uri,
+    cookies: cookies
+  };
+  res.json(result);
 }
 
 // main function
@@ -125,22 +123,21 @@ export async function getServer(): Promise<express.Application> {
     try {
       const user = await User.loadByUsername(username);
       if (!user) {
-        res.redirect("/login?errors=1");
+        doRedirect(res, "/login?errors=1");
         return;
       }
 
       if (!(await user.validate(password))) {
-        res.redirect("/login?errors=1");
+        doRedirect(res, "/login?errors=1");
         return;
       }
 
       // add user to session table
       const id = sessionTable.addSession(user, false);
-      res.cookie("sessionIdClone", id, { maxAge: 8640000 * 8 });
-      res.redirect("/");
+      doRedirect(res, "/", { "sessionId": id});
     } catch (e) {
       console.error(e);
-      res.redirect("/login?errors=2");
+      doRedirect(res, "/login?errors=2");
     }
   });
 
@@ -177,18 +174,17 @@ export async function getServer(): Promise<express.Application> {
       }
 
       if (error !== 0) {
-        res.redirect(`/register?errors=${error}`);
+        doRedirect(res, `/register?errors=${error}`);
         return;
       }
 
       // create a new user
       const user = await User.createNewUser(username, password, email, false);
       const id = sessionTable.addSession(user, false);
-      res.cookie("sessionIdClone", id, { maxAge: 8640000 * 8 });
-      res.redirect("/");
+      doRedirect(res,"/",{"sessionId":id});
     } catch(e) {
       console.error(e);
-      res.redirect("/register?errors=2048"); // internal error
+      doRedirect(res, "/register?errors=2048"); // internal error
       return;
     }
   });
@@ -230,7 +226,7 @@ export async function getServer(): Promise<express.Application> {
         if (error) {
           let errUrl = `/new-student?errors=${error}`;
           if (error & 2) errUrl += `&belt=${belt}`;
-          res.redirect(errUrl);
+          doRedirect(res, errUrl);
           return;
         }
 
@@ -241,10 +237,10 @@ export async function getServer(): Promise<express.Application> {
         student.userId = user.userId;
         await student.submit();
 
-        res.redirect("/");
+        doRedirect(res, "/");
       } catch (e) {
         console.error(e);
-        res.redirect("/new-student?errors=64");
+        doRedirect(res, "/new-student?errors=64");
         return;
       }
     }
@@ -289,15 +285,15 @@ export async function getServer(): Promise<express.Application> {
         const student = await Student.loadById(studentId);
 
         if (!student) {
-          res.redirect(`/change-rp?student-id=${student.studentId}&errors=1`);
+          doRedirect(res, `/change-rp?student-id=${student.studentId}&errors=1`);
           return;
         }
 
         student.rp = rp;
         await student.submit();
-        res.redirect(`/change-rp?student-id=${studentId}&errors=8`);
+        doRedirect(res, `/change-rp?student-id=${studentId}&errors=8`);
       } catch (e) {
-        res.redirect(`/change-rp?student-id=${req.body.studentId}&errors=4`);
+        doRedirect(res, `/change-rp?student-id=${req.body.studentId}&errors=4`);
       }
     }
   });
@@ -336,16 +332,16 @@ export async function getServer(): Promise<express.Application> {
 
         if (error) {
           let errUrl = `/new-event?errors=${error}`;
-          res.redirect(errUrl);
+          doRedirect(res, errUrl);
           return;
         }
 
         await event.submit();
 
-        res.redirect("/");
+        doRedirect(res, "/");
       } catch (e) {
         console.error(e);
-        res.redirect("/new-event?errors=128");
+        doRedirect(res, "/new-event?errors=128");
       }
     }
   });
@@ -357,7 +353,7 @@ export async function getServer(): Promise<express.Application> {
       sessionTable.removeSession(sessionId);
       res.clearCookie("sessionId");
     }
-    res.redirect("/");
+    doRedirect(res, "/");
   });
 
   // process user's attendance
@@ -378,7 +374,7 @@ export async function getServer(): Promise<express.Application> {
       }     
 
       if (key.length === 0) {
-        res.redirect("/?errors=2");
+        doRedirect(res, "/?errors=2");
       }
 
       console.log(`User key is ${JSON.stringify(key)}`);
@@ -390,7 +386,7 @@ export async function getServer(): Promise<express.Application> {
           console.log(change);
           if ((<number[]>key).indexOf(change.studentId) === -1) {
             console.log(`Change ${change.studentId} not found in key`);
-            res.redirect("/?errors=1");
+            doRedirect(res, "/?errors=1");
             return;
           }
         }
@@ -401,9 +397,9 @@ export async function getServer(): Promise<express.Application> {
         await Attendance.setAttendance(change.studentId, change.eventId, change.attendance);
       }
 
-      res.redirect("/?errors=8");
+      doRedirect(res, "/?errors=8");
     } catch (err) {
-      res.redirect("/?errors=4");
+      doRedirect(res, "/?errors=4");
       console.error(err);
     }
   });
@@ -417,11 +413,6 @@ export async function getServer(): Promise<express.Application> {
  
   // main page
   app.get("/", async function(req: express.Request, res: express.Response) {
-    if (cookieDuplicate(req, res)) {
-      res.redirect("/");
-      return;
-    }
-
     let user = getUser(req);
     let key;
 
@@ -437,7 +428,13 @@ export async function getServer(): Promise<express.Application> {
 
     const page = req.query.page || 0;
     const eventPage = req.query.eventpage || 0;
-    res.send(render(await getDiagram(page, eventPage, key), getUsername(req)));
+    let eventsPerPage;
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(req.headers["user-agent"])) {
+      eventsPerPage = 3;
+    } else {
+      eventsPerPage = 8;
+    }
+    res.send(render(await getDiagram(page, eventPage, eventsPerPage, key), getUsername(req)));
   });
 
   return app;

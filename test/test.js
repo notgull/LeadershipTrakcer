@@ -139,7 +139,7 @@ describe("Testing user systems", () => {
     it("#isAdmin", () => { expect(testUser).to.have.property("isAdmin", user1.isAdmin); });
   });
 
-  describe("Testing login interface", () => {
+  /*describe("Testing login interface", () => {
     it("as existing user", (done) => {
       const userData = {
         username: user1Username,
@@ -217,7 +217,7 @@ describe("Testing user systems", () => {
     it("with existing email", (done) => {
       expectsErr("irrelevant", "irrelevant", user1Email, 1024, done);
     });
-  });
+  });*/
 });
 
 describe("Testing student-related functions", () => {
