@@ -47,8 +47,8 @@ import { ChangeAttendance } from "./attendance-common";
 import { checkUsernameUsage, checkEmailUsage } from "./users/check-existence";
 import { emailRegex, Nullable } from "./utils";
 import { EventRecord } from "./eventRecord";
+import { exists, readFile } from "./promises";
 import { initializeSchema } from './schema';
-import { readFile } from "./promises";
 import { render } from "./render";
 import { SessionTable } from "./users/sessions";
 import { Student } from "./student";
@@ -409,6 +409,17 @@ export async function getServer(): Promise<express.Application> {
     const page = req.query.page || 0;
     const html = render(await getLeaderboard(page), getUsername(req));
     res.send(html);
+  });
+
+  // images needed for leaderboard
+  app.get("/images/:img", async function(req: express.Request, res: express.Response) {
+    const filename = path.join("images/", req.params.img);
+    if (!(await exists(filename))) {
+      res.status(404).send("Unable to retrieve image");
+      return;
+    }
+
+    res.send(await readFile(filename));
   });
  
   // main page

@@ -60,9 +60,20 @@ export default async function getLeaderboardHTML(page: number): Promise<string> 
 
   async function generateRow(index: number, student: Student, placing: number) {
     let points = await Attendance.getUserPoints(student.studentId);
+    let crown = "";
+    switch (index) {
+      case 1: crown = "/images/gold.png"; break;
+      case 2: crown = "/images/silver.png"; break;
+      case 3: crown = "/images/bronze.png"; break;
+    }
+
+    if (crown.length > 0) {
+      crown = ` <img style="height: 18px; float: right; margin-right: 3px;" src="${crown}" alt=${crown.split("/")[2]} />`;
+    }
+
     const row = nunjucks.renderString(tableBody, {
       name: `${student.first} ${student.last}`,
-      order: placing,
+      order: `${placing}${crown}`,
       leadershipPoints: points
     });
     parts[index] = row;
