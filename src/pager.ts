@@ -40,10 +40,15 @@ export class Pager {
   private frame: JQuery;
 
   constructor(
-    private curPage: int,
-    private totalPages: int,
+    private curPage: number,
+    private totalPages: number,
     private pageSwitcher: PageSwitcher
   ) {
-    frame = $("<form>");
+    this.frame = $("<form>");
+    this.renderWidget();
+  }
+
+  renderWidget() {
+    
   }
 }
