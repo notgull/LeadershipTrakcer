@@ -50,7 +50,6 @@ On Windows, the same command can most likely be run within Powershell.
 
 - User id change
 - Mobile support (login)
-- Link navigation
 - Buttons for multi-page
 - Cool background (ask Mrs. Denice)
 - Testing!!!!

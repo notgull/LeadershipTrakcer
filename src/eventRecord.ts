@@ -78,6 +78,10 @@ export class EventRecord {
     return EventRecord.fromRow(res.rows[0]);
   }
 
+  static async numPages(limit: number = 9999): Promise<number> {
+    return (await query("SELECT * FROM Events;", [])).rowCount / limit;
+  }
+
   // load all in database
   static async loadAll(page: number = 0, limit: number = 9999): Promise<Array<EventRecord>> {
     const offset = page * limit;

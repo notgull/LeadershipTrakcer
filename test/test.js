@@ -383,4 +383,5 @@ describe("Load pages into a website simulator to test them", () => {
   it("#/new-event", async () => { await setupPage("/new-event"); });
   it("#/manage-students", async () => { await setupPage("/manage-students"); });
   it("#/change-rp", async () => { await setupPage("/change-rp"); });
+  it("#/change-userid");
 });
