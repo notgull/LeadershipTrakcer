@@ -34,13 +34,14 @@
 // page switcher widget
 import * as $ from "jquery";
 
+import { getParameter } from "./parameter";
+
 export type PageSwitcher = (page: number) => void;
 
 export class Pager {
   private frame: JQuery;
 
   constructor(
-    private curPage: number,
     private totalPages: number,
     private pageSwitcher: PageSwitcher
   ) {
@@ -49,6 +50,26 @@ export class Pager {
   }
 
   renderWidget() {
-    
+    $("<tr>")
+      .appendTo($("<table>").appendTo(this.frame))
+      .append(((): JQuery => {
+        const col = $();
+        for (let i = 0; i < this.totalPages; i++) {
+          col.add($(`<button value="${i+1}"></button>`).click((this: HTMLElement) => {
+            this.pageSwitcher(parseInt($(this).attr("value"), 10) - 1);
+          }));
+        }
+        return col;
+      })());
+  }
+}
+
+export function setupPager() {
+  const diagramPager = $("#diagram-pager");
+  if (diagramPager.length) {
+    const pager = new Pager(
+      parseInt(diagramPager.attr("class"), 10),
+      (page: number) => { window.location.href = `/?eventpage=${page}`; }
+    );
   }
 }

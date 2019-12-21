@@ -69,7 +69,9 @@ const eventBody =
 const tableEnd = 
     `</table>
 
-     <form id="submit-form"><p><input type="button" id="submit" value="Submit" class="vanished"/></p></form>`;
+     <form id="submit-form"><p><input type="button" id="submit" value="Submit" class="vanished"/></p></form>
+
+     <div id="diagram-pager" class="{{ total_page_num }}"></div>`;
 
 export default async function getDiagramHTML(
   page: number, 
@@ -149,7 +151,7 @@ export default async function getDiagramHTML(
 
   await Promise.all(promises);
 
-  parts.push(tableEnd);
+  parts.push(nunjucks.renderString(tableEnd, { total_page_num: await EventRecord.numPages(eventsPerPage) }));
   const endResult = parts.join("\n");
   return endResult;
 }
