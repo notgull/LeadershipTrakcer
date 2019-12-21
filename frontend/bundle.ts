@@ -40,6 +40,7 @@ import { foundCreatestudent } from "./new-student";
 import { foundDiagram } from "./diagram";
 import { foundLogin } from "./login";
 import { foundRegister } from "./register";
+import { setupPager } from "./pager";
 
 console.log("Executing client side scripts...");
 
@@ -72,4 +73,6 @@ $(document).ready(() => {
   if ($("#diagram-table").length) {
     foundDiagram();
   }
+
+  setupPager();
 });

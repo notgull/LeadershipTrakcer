@@ -39,29 +39,23 @@ import { getParameter } from "./parameter";
 export type PageSwitcher = (page: number) => void;
 
 export class Pager {
-  private frame: JQuery;
+  public frame: JQuery;
 
   constructor(
-    private totalPages: number,
-    private pageSwitcher: PageSwitcher
+    private totalPages: number
   ) {
     this.frame = $("<form>");
     this.renderWidget();
   }
 
   renderWidget() {
-    $("<tr>")
-      .appendTo($("<table>").appendTo(this.frame))
-      .append(((): JQuery => {
-        const col = $();
-        const that = this;
-        for (let i = 0; i < this.totalPages; i++) {
-          col.add($(`<button value="${i+1}"></button>`).click(function(this: HTMLElement) {
-            that.pageSwitcher(parseInt($(this).attr("value"), 10) - 1);
-          }));
-        }
-        return col;
-      })());
+    const row = $("<tr>")
+      .appendTo($("<table>").appendTo(this.frame));
+
+    const that = this;
+    for (let i = 0; i < this.totalPages; i++) {
+      row.append($(`<a href="/?eventpage=${i}" style="margin: 1px; padding: 1px; border: 1px solid black">${i+1}</a>`));
+    }
   }
 }
 
@@ -69,8 +63,9 @@ export function setupPager() {
   const diagramPager = $("#diagram-pager");
   if (diagramPager.length) {
     const pager = new Pager(
-      parseInt(diagramPager.attr("class"), 10),
-      (page: number) => { window.location.href = `/?eventpage=${page}`; }
+      Math.floor(parseInt(diagramPager.attr("class"), 10)),
     );
+
+    diagramPager.append(pager.frame);
   }
 }
