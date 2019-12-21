@@ -54,9 +54,10 @@ export class Pager {
       .appendTo($("<table>").appendTo(this.frame))
       .append(((): JQuery => {
         const col = $();
+        const that = this;
         for (let i = 0; i < this.totalPages; i++) {
-          col.add($(`<button value="${i+1}"></button>`).click((this: HTMLElement) => {
-            this.pageSwitcher(parseInt($(this).attr("value"), 10) - 1);
+          col.add($(`<button value="${i+1}"></button>`).click(function(this: HTMLElement) {
+            that.pageSwitcher(parseInt($(this).attr("value"), 10) - 1);
           }));
         }
         return col;
