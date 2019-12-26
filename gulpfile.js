@@ -35,6 +35,7 @@ const babelify = require("babelify");
 const browserify = require("browserify");
 const fs = require("fs");
 const gulp = require("gulp");
+const terser = require("gulp-terser");
 const ts = require("gulp-typescript");
 
 const { exec } = require("child_process");
@@ -73,8 +74,19 @@ gulp.task("frontend-browserify", () => {
     .pipe(fs.createWriteStream("dist/bundle.js"));
 });
 
+gulp.task("frontend-minify", () => {
+  createDir("dist");
+  return gulp.src("dist/bundle.js")
+           .pipe(terser({
+             "compress": {
+               "properties": false
+             }
+           }))
+           .pipe(gulp.dest("dist"));
+});
+
 gulp.task("test", () => (
   exec("npm run test", {stdio: "inherit", stderr: "inherit"})
 ));
 
-gulp.task("default", gulp.parallel("backend", gulp.series("frontend-ts", "frontend-browserify")));
+gulp.task("default", gulp.parallel("backend", gulp.series("frontend-ts", "frontend-browserify", "frontend-minify")));

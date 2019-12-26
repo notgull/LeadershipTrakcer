@@ -32,7 +32,7 @@
  */
 
 // contains the express server to run
-
+import * as assert from "assert";
 import * as bodyParser from 'body-parser';
 import * as cookieParser from "cookie-parser";
 import * as express from 'express';
@@ -191,15 +191,15 @@ export async function getServer(): Promise<express.Application> {
 
   // get create student page
   app.get("/new-student", async function(req: express.Request, res: express.Response) {
-    if (adminLock(req, res)) {
+    //if (adminLock(req, res)) {
       const newStudentPage = await readFile("html/createstudent.html");
       res.send(render(newStudentPage.toString(), getUsername(req)));
-    }
+    //}
   });
 
   // process the creation of a new student
   app.post("/process-new-student", async function(req: express.Request, res: express.Response) {
-    if (adminLock(req, res)) {
+    //if (adminLock(req, res)) {
       const { first, last, belt } = req.body;
 
       try {
@@ -243,7 +243,7 @@ export async function getServer(): Promise<express.Application> {
         doRedirect(res, "/new-student?errors=64");
         return;
       }
-    }
+    //}
   });
 
   // admin console to manage students
@@ -421,7 +421,31 @@ export async function getServer(): Promise<express.Application> {
 
     res.send(await readFile(filename));
   });
+
+  // change the user id
+  app.get("/change-userid", async function(req: express.Request, res: express.Response) {
+    if (adminLock(req, res)) {
+      res.send(render((await readFile("html/change-userid.html")).toString(), getUsername(req)));
+    }
+  });
  
+  app.post("/process-change-userid", async function(req: express.Request, res: express.Response) {
+    if (adminLock(req, res)) {
+      try {
+        const { uid, sid } = req.body;
+        console.log(uid + " " + sid);
+        
+        const student = await Student.loadById(sid);
+        assert(await User.loadById(uid));
+        student.userId = uid;
+        await student.submit();
+      } catch (err) {
+        doRedirect(res, "/?errors=4");
+        console.error(err);
+      }
+    }
+  });
+
   // main page
   app.get("/", async function(req: express.Request, res: express.Response) {
     let user = getUser(req);
@@ -434,7 +458,7 @@ export async function getServer(): Promise<express.Application> {
     } else {
       key = (await Student.loadByUser(user.userId)).map((student: Student): number => {
         return student.studentId;
-      });;
+      });
     }
 
     const page = req.query.page || 0;

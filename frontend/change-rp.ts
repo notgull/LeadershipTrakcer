@@ -35,6 +35,8 @@ import { ErrorMap, processErrors } from "./error";
 import { getParameter } from "./parameter";
 import { sendPostData } from "./post";
 
+import * as $ from "jquery";
+
 /* Error Codes (2^x)
   1 - Student not found
   2 - Invalid rating points

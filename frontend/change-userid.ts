@@ -1,5 +1,5 @@
 /*
- * frontend/bundle.ts
+ * frontend/change-userid.ts
  * LeadershipTrakcer - Martial arts attendance logger
  *
  * Copyright (c) 2019, John Nunley and Larson Rivera
@@ -31,53 +31,44 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// essentially the "main" function of the frontend
+import { ErrorMap, processErrors } from "./error";
+import { getParameter } from "./parameter";
+import { sendPostData } from "./post";
+
 import * as $ from "jquery";
 
-import { foundChangeRp } from "./change-rp";
-import { foundChangeUserid } from "./change-userid";
-import { foundCreateEvent } from "./new-event";
-import { foundCreatestudent } from "./new-student";
-import { foundDiagram } from "./diagram";
-import { foundLogin } from "./login";
-import { foundRegister } from "./register";
-import { setupPager } from "./pager";
+/* Error Codes (2^x)
+  1 - not used 
+  2 - not used
+  4 - Internal error
+  8 - Success
+*/
 
-console.log("Executing client side scripts...");
+const errMap: ErrorMap = {
+  1: "err",
+  2: "err",
+  4: "An internal error occurred, please consult the site administrators."
+}
 
-$(document).ready(() => {
-  console.log("Executing onload");
+function processChangeUserid() {
+  const uid = $("uid");
+  const sid = $("sid");
 
-  // if the register element is found, add triggers to it
-  if ($("#register").length) {
-    foundRegister();
+  const url = "/process-change-userid";
+  const params = {
+    sid: parseInt(<string>sid.val(), 10),
+    uid: parseInt(<string>uid.val(), 10)
+  };
+
+  sendPostData(url, params);
+}
+
+export function foundChangeUserid() {
+  if (getParameter("errors") !== "8") {
+    processErrors(errMap);
+  } else {
+    $("#errorMessage").html("Success!");
   }
 
-  // if the login element is found, add triggers to it
-  if ($("#login").length) {
-    foundLogin();
-  }
-
-  // if the createstudent element is found, add triggers to it
-  if ($("#createstudent").length) {
-    foundCreatestudent();
-  }
-
-  if ($("#createEvent").length) {
-    foundCreateEvent();
-  }
-
-  if ($("#change-rp").length) {
-    foundChangeRp();
-  }
-
-  if ($("#diagram-table").length) {
-    foundDiagram();
-  }
-
-  if ($("#change-userid").length) {
-    foundChangeUserid();
-  }
-
-  setupPager();
-});
+  $("#submit").click(processChangeUserid);
+}

@@ -146,8 +146,8 @@ export class Student  {
                             [this.first, this.last, this.belt, this.rp, this.userId]);
       this.studentId = parseInt(res.rows[0].studentid, 10);
     } else {
-      let res = await query(`UPDATE Students SET first=$1, last=$2, belt=$3, rp=$4 WHERE studentId=$5;`,
-                            [this.first, this.last, this.belt, this.rp, this.studentId]);
+      let res = await query(`UPDATE Students SET first=$1, last=$2, belt=$3, rp=$4, userid=$6WHERE studentId=$5;`,
+                            [this.first, this.last, this.belt, this.rp, this.studentId, this.userId]);
       // NOTE: we shouldn't need to update the user id
     }
   }
