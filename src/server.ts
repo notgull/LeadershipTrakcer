@@ -439,6 +439,8 @@ export async function getServer(): Promise<express.Application> {
         assert(await User.loadById(uid));
         student.userId = uid;
         await student.submit();
+
+        doRedirect(res, "/?errors=8");
       } catch (err) {
         doRedirect(res, "/?errors=4");
         console.error(err);

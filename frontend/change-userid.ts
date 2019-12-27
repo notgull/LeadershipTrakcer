@@ -51,13 +51,13 @@ const errMap: ErrorMap = {
 }
 
 function processChangeUserid() {
-  const uid = $("uid");
-  const sid = $("sid");
+  const uid = $("#uid");
+  const sid = $("#sid");
 
   const url = "/process-change-userid";
   const params = {
-    sid: parseInt(<string>sid.val(), 10),
-    uid: parseInt(<string>uid.val(), 10)
+    sid: sid.val(), 
+    uid: uid.val()
   };
 
   sendPostData(url, params);
