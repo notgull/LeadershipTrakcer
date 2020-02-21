@@ -78,6 +78,15 @@ export class EventRecord {
     return EventRecord.fromRow(res.rows[0]);
   }
 
+  static async loadByCurrentQuarter(): Promise<Array<EventRecord>> {
+    let res = await query("SELECT * FROM Events WHERE DATE_PART('quarter', date) = DATE_PART('quarter', now());", []);
+    let array = [];
+    for (const row of res.rows) {
+      array.push(EventRecord.fromRow(row));
+    }
+    return array;
+  }
+
   static async numPages(limit: number = 9999): Promise<number> {
     return (await query("SELECT * FROM Events;", [])).rowCount / limit;
   }

@@ -53,3 +53,11 @@ On Windows, the same command can most likely be run within Powershell.
 - Cool background (ask Mrs. Denice)
 - Testing!!!!
 - Delete student
+- Show total points
+
+- Only show points for quarter
+- Detele row
+- Fix manage students, increase student limit
+- Add belt limiting
+- Add bar for belt ranks
+- Monthly/quaterly/all time totals
