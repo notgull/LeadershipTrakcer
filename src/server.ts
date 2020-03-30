@@ -278,6 +278,43 @@ export async function getServer(): Promise<express.Application> {
     }
   });
 
+  app.get("/delete-student", async function(req: express.Request, res: express.Response) {
+    if (adminLock(req, res)) {
+        let studentId = req.query.studentid || -1;
+
+        try {
+            const student = await Student.loadById(studentId);
+            const html = await readFile("html/delete-student.html");
+
+            if (!student) {
+              res.send(render(
+                'This student does not exist. <a href="/manage-students">Go back to management console</a>',
+                getUsername(req)
+              ));
+            }
+
+            const page = nunjucks.renderString(html.toString(), { name: `${student.first} ${student.last}` });
+            res.send(render(page, getUsername(req)));
+        } catch (e) {
+            doRedirect(res, `/delete-student?studentid=${studentId}&errors=2`);
+        }
+    }
+  });
+
+  app.post("/process-delete-student", async function(req: express.Request, res: express.Response) {
+    if (adminLock(req, res)) {
+      let studentId = req.body.studentid; 
+
+      try {
+          await Student.deleteById(studentId);
+          doRedirect(res, `/manage-students`);
+      } catch (e) {
+          console.error(e);
+          doRedirect(res, `/delete-student?studentid=${studentId}&errors=2`);
+      }
+    }
+  });
+
   app.post("/process-change-rp", async function(req: express.Request, res: express.Response) {
     if (adminLock(req, res)) { // todo: better admin lock?
       try {

@@ -1,5 +1,5 @@
 /*
- * frontend/bundle.ts
+ * frontend/delete-student.ts
  * LeadershipTrakcer - Martial arts attendance logger
  *
  * Copyright (c) 2019, John Nunley and Larson Rivera
@@ -31,58 +31,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// essentially the "main" function of the frontend
+import { ErrorMap, processErrors } from "./error";
+import { getParameter } from "./parameter";
+import { sendPostData } from "./post";
+
 import * as $ from "jquery";
 
-import { foundChangeRp } from "./change-rp";
-import { foundChangeUserid } from "./change-userid";
-import { foundCreateEvent } from "./new-event";
-import { foundCreatestudent } from "./new-student";
-import { foundDeleteStudent } from "./delete-student";
-import { foundDiagram } from "./diagram";
-import { foundLogin } from "./login";
-import { foundRegister } from "./register";
-import { setupPager } from "./pager";
+/* Error Codes (2^x)
+  1 - Student not found
+  2 - Error
+*/
 
-console.log("Executing client side scripts...");
+const errMap: ErrorMap = {
+  1: "Student was not found",
+  2: "An internal error occurred, please consult the site administrators."
+};
 
-$(document).ready(() => {
-  console.log("Executing onload");
+// submit details
+function processDeletion() {  
+  const url = "/process-delete-student";
+  const params = {
+    studentid: parseInt(getParameter("studentid"), 10),
+  };
 
-  // if the register element is found, add triggers to it
-  if ($("#register").length) {
-    foundRegister();
-  }
+  sendPostData(url, params);
+}
 
-  // if the login element is found, add triggers to it
-  if ($("#login").length) {
-    foundLogin();
-  }
+export function foundDeleteStudent() {
+  processErrors(errMap);
 
-  // if the createstudent element is found, add triggers to it
-  if ($("#createstudent").length) {
-    foundCreatestudent();
-  }
-
-  if ($("#createEvent").length) {
-    foundCreateEvent();
-  }
-
-  if ($("#change-rp").length) {
-    foundChangeRp();
-  }
-
-  if ($("#diagram-table").length) {
-    foundDiagram();
-  }
-
-  if ($("#change-userid").length) {
-    foundChangeUserid();
-  }
-
-  if ($("#delete-student").length) {
-    foundDeleteStudent();
-  }
-
-  setupPager();
-});
+  $("#im-sure").click(processDeletion);
+}

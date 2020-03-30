@@ -111,6 +111,12 @@ export class Student  {
 
     return array;
   }
+ 
+  // delete a student by its id
+  static async deleteById(studentId: number): Promise<void> {
+    await query("DELETE FROM Attendance WHERE studentId=$1;", [studentId]);
+    await query("DELETE FROM Students WHERE studentId=$1;", [studentId]);
+  }
 
   // load a student by first and last name
   static async loadByFirstAndLastName(first: string, last: string): Promise<Nullable<Student>> {
