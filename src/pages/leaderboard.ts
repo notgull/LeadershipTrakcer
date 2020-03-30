@@ -45,12 +45,14 @@ export default async function getLeaderboardHTML(page: number): Promise<string> 
       <tr>
         <th>Place</th>
         <th>Name</th>
-        <th>Leadership Points</th>
+        <th>Quarterly Points</th>
+        <th>Total Points</th>
       </tr>`;
   const tableBody =
     `  <tr>
          <td>{{ order }}</td>
          <td>{{ name }}</td>
+         <td>{{ qtPoints }}</td>
          <td>{{ leadershipPoints }}</td>
        </tr>`;
   const tableEnd = 
@@ -60,6 +62,7 @@ export default async function getLeaderboardHTML(page: number): Promise<string> 
 
   async function generateRow(index: number, student: Student, placing: number) {
     let points = await Attendance.getUserPoints(student.studentId);
+    let qtPoints = await Attendance.getQuarterPoints(student.studentId);
     let crown = "";
     switch (index) {
       case 1: crown = "/images/gold.png"; break;
@@ -74,7 +77,8 @@ export default async function getLeaderboardHTML(page: number): Promise<string> 
     const row = nunjucks.renderString(tableBody, {
       name: `${student.first} ${student.last}`,
       order: `${placing}${crown}`,
-      leadershipPoints: points
+      leadershipPoints: points,
+      qtPoints,
     });
     parts[index] = row;
   }

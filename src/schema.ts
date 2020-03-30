@@ -75,6 +75,22 @@ export async function initializeSchema(): Promise<void> {
          RETURN COALESCE(total + rpval, 0);
        END; $$
        LANGUAGE PLPGSQL;`;
+  const quarterPointsFunctionSql = 
+    `CREATE OR REPLACE FUNCTION getQuarterPoints(sid BIGINT)
+       RETURNS INTEGER AS $$
+       declare
+         total INTEGER;
+         rpval INTEGER;
+       BEGIN
+         SELECT SUM(Events.points) INTO total
+         FROM Attendance
+         INNER JOIN Events ON Attendance.eventId=Events.eventId AND extract(quarter from Events.date)=extract(quarter from now()) AND extract(year from Events.date)=extract(year from now())
+         INNER JOIN Students ON Students.studentId=Attendance.studentId
+         WHERE Students.studentId = sid AND Attendance.attended;
+         SELECT Students.rp INTO rpval FROM Students WHERE Students.studentId = sid LIMIT 1;
+         RETURN COALESCE(total + rpval, 0);
+       END; $$
+       LANGUAGE PLPGSQL;`;
 
   
   await query(userTableSql, []);
@@ -82,4 +98,5 @@ export async function initializeSchema(): Promise<void> {
   await query(eventTableSql, []);
   await query(attendanceTableSql, []);
   await query(userPointsFunctionSql, []);
+  await query(quarterPointsFunctionSql, []);
 }

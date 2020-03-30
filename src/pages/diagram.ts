@@ -51,7 +51,7 @@ const tableHeader =
        <tr>
          <th>Name</th>
          {{ event_names }}
-         <th>Leadership Points</th>
+         <th>Leadership Points (Quarterly)</th>
        </tr>`; 
 const eventName = "<th>{{ event_name }}</th>";
 const tableBody = 
@@ -137,7 +137,7 @@ export default async function getDiagramHTML(
     const row = nunjucks.renderString(tableBody, {
       events: generateEventCheckboxes(student.studentId),
       name: `${student.first} ${student.last}`,
-      leadershipPoints: await Attendance.getUserPoints(student.studentId),
+      leadershipPoints: await Attendance.getQuarterPoints(student.studentId),
       studentId: student.studentId
     });
     //console.log(row);

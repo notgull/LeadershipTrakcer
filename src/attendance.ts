@@ -49,6 +49,14 @@ export class Attendance {
     return res.rows[0].totalpoints;
   }
 
+  // get user points from quarter
+  static async getQuarterPoints(studentId: number): Promise<number> {
+    let res = await query("SELECT getQuarterPoints($1) as quarterpoints;", [studentId]);
+    if (res.rowCount === 0) return 0;
+    if (!res.rows[0].quarterpoints) return 0;
+    return res.rows[0].quarterpoints;
+  }
+
   static async setAttendance(studentId: number, eventId: number, attended: boolean): Promise<void> {
     let res = await query("SELECT studentId FROM Attendance WHERE studentId=$1 AND eventId=$2;", 
                           [studentId, eventId]);
