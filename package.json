@@ -43,7 +43,7 @@
     "gulp": "^4.0.2",
     "gulp-terser": "^1.2.0",
     "gulp-typescript": "^5.0.1",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "js-cookie": "^2.2.1",
     "nunjucks": "^3.2.1",
     "pg": "^7.12.1",
