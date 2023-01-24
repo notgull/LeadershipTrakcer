@@ -36,7 +36,7 @@
     "body-parser": "^1.19.0",
     "browserify": "^16.5.1",
     "cookie-parser": "^1.4.4",
-    "cookiejar": "^2.1.2",
+    "cookiejar": "^2.1.4",
     "dateformat": "^3.0.3",
     "exceljs": "^3.4.0",
     "express": "^4.17.1",
